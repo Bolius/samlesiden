@@ -7,6 +7,10 @@
     - Landsdækkende
     - Pr. kommune 
 
+- Find kommune via DAWA inputfeldt
+- Mulighed for API kald for at hente en graf
+- Mulighed for at overlaye kommuner
+
 ## Afprøv samlesiden lokalt
 
 ### Hent, byg og kør:

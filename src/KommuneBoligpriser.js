@@ -73,7 +73,7 @@ class KommuneBoligpriser extends React.Component {
             },
 			data: [{
                 name: this.state.ParcelLegend,
-                    type: "spline",
+                type: "spline",
                 yValueFormatString: "# DKK",
                 showInLegend: true,
                 dataPoints: this.state.Parcel
