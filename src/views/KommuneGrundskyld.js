@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CanvasJSReact from './canvasjs.react';
+import CanvasJSReact from '../canvasjs.react';
 // var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -29,12 +29,22 @@ function GeneratePostRequest(a) {
 class Grundskyld extends React.Component {
   constructor(props) {
     super(props);
-    console.log("Props.id = " + props.id)
     this.state = {
-      id: props.id,
+      id: props.komKode,
       name: ""
     };
+    this.toggleDataSeries = this.toggleDataSeries.bind(this);
   }
+
+  toggleDataSeries(e){
+		if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+			e.dataSeries.visible = false;
+		}
+		else{
+			e.dataSeries.visible = true;
+		}
+		this.chart.render();
+	}
 
   componentDidMount() {
     const requestOptions = {
@@ -87,7 +97,7 @@ class Grundskyld extends React.Component {
       legend:{
 		    cursor: "pointer",
 		    fontSize: 16,
-		    itemclick: toggleDataSeries
+		    itemclick: this.toggleDataSeries
 	    },
 	    toolTip:{
 		    shared: true
@@ -130,21 +140,11 @@ class Grundskyld extends React.Component {
 		return (
 		<div>
 			<CanvasJSChart options = {options}
-				/* onRef={ref => this.chart = ref} */
+				onRef={ref => this.chart = ref}
 			/>
 		</div>
 		);
   }
-}
-
-function toggleDataSeries(e){
-	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-		e.dataSeries.visible = false;
-	}
-	else{
-		e.dataSeries.visible = true;
-	}
-	Grundskyld.render();
 }
 
 export default Grundskyld;

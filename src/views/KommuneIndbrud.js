@@ -1,17 +1,17 @@
 import React from 'react';
 
-import CanvasJSReact from './canvasjs.react';
+import CanvasJSReact from '../canvasjs.react';
 // var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-function GeneratePostRequest(a) {
+function GeneratePostRequest(komKode, tid) {
   var req = {
     table: "STRAF22",
     format: "JSONSTAT",
     variables: [
       {
         code: "OMRÅDE",
-        values: [a]
+        values: [komKode]
       },
       {
         code: "OVERTRÆD",
@@ -23,10 +23,11 @@ function GeneratePostRequest(a) {
       },
       {
         code: "TID",
-        values: ["*"]
+        values: [tid]
       }
     ]
   };
+  console.log(JSON.stringify(req))
   return JSON.stringify(req)
 
 }
@@ -34,18 +35,19 @@ function GeneratePostRequest(a) {
 class KommuneIndbrud extends React.Component {
   constructor(props) {
     super(props);
-    console.log("Props.id = " + props.id)
     this.state = {
-      id: props.id,
+      komKode: this.props.komKode,
+      time: this.props.time,
       name: ""
     };
+    this.toggleDataSeries = this.toggleDataSeries.bind(this);
   }
 
   componentDidMount() {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: GeneratePostRequest(this.state.id)
+      body: GeneratePostRequest(this.state.komKode, this.state.time)
     };
 
     fetch('https://api.statbank.dk/v1/data', requestOptions)
@@ -67,27 +69,51 @@ class KommuneIndbrud extends React.Component {
       });
   }
 
+  toggleDataSeries(e){
+		if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+			e.dataSeries.visible = false;
+		}
+		else{
+			e.dataSeries.visible = true;
+		}
+		this.chart.render();
+	}
+
   render(){
+    var header = "";
+    if (this.props.showHeader === "true"){
+      header = "Anmeldelser og sigtelser for indbrud pr. år i " + this.state.name + " kommune"; 
+    }
     const options = {
 			animationEnabled: true,
       title:{
-				text: "Anmeldelser og sigtelser for indbrud pr. år i " + this.state.name + " kommune"
+				text: header
 			},
+      legend:{
+        cursor: "pointer",
+        fontSize: 16,
+        itemclick: this.toggleDataSeries
+      },
       axisY:{
         valueFormatString:"#",
       },
 			data: [{
-        yValueFormatString: "# sigtelser",
-				dataPoints: this.state.sig
-			},{
+        name: "Anmeldelser",
         yValueFormatString: "# anmeldelser",
-				dataPoints: this.state.anm
+				dataPoints: this.state.anm,
+    		showInLegend: true
+			  },
+        {
+        name: "Sigtelser",
+        yValueFormatString: "# sigtelser",
+				dataPoints: this.state.sig,
+    		showInLegend: true
 			}]
 		}
 		return (
 		<div>
 			<CanvasJSChart options = {options}
-				/* onRef={ref => this.chart = ref} */
+				onRef={ref => this.chart = ref}
 			/>
 		</div>
 		);
