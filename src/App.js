@@ -9,13 +9,6 @@ import AdressSelect from "./components/adress-select.js";
 
 import { useParams } from "react-router";
 import trackEvent from "./components/action-logger.js";
-import KommuneIndbrud from './views/KommuneIndbrud.js';
-
-function User() {
-  let { id } = useParams();
-
-  return id;
-}
 
 class App extends React.Component {
   constructor(props) {
@@ -86,10 +79,16 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/">
               {!this.state.hasData ? (
+                <>
                 <AdressSelect
                   toggleDataModal={this.toggleDataModal}
                   setData={this.setData}
                 />
+                <ul>
+                  <li>/indbrud/:area/:time/:showHeader/:graphType</li>
+                  <li>/boligpriser/:area/:time/:showHeader/:graphType</li>
+                </ul>
+                </>
               ) : (
                 <ResultPage
                   toggleDataModal={this.toggleDataModal}
@@ -99,8 +98,9 @@ class App extends React.Component {
               )}
             </Route>
             <Switch>
-              <Route path="/indbrud/:area/:time/:showHeader" children={<ShowGraph1 />} />
-              <Route path="/boligpriser/:area/:time/:showHeader" children={<ShowGraph2 />} />
+              <Route path="/indbrud/:area/:time/:showHeader/:graphType" children={<ShowGraph1 graph={"AnmSigtKom"}/>} />
+              <Route path="/boligpriser/:area/:time/:showHeader/:graphType" children={<ShowGraph1 graph={"Boligpriser"}/>} />
+              <Route path="/grundskyld/:area/:time/:showHeader/:graphType" children={<ShowGraph1 graph={"Grundskyld"}/>} />
             </Switch>
           </Switch>
         </Router>
@@ -109,29 +109,18 @@ class App extends React.Component {
   }
 }
 
-function ShowGraph1() {
-  let { area, time, showHeader } = useParams();
+function ShowGraph1(props) {
+  let { area, time, showHeader, graphType } = useParams();
   return (
     <ResultPage
-      graph="AnmSigtKom"
+      graph={props.graph}
       area={area}
       time={time}
+      graphType={graphType}
       showHeader={showHeader}
       reset={App.reset}
     />
   )
 }
 
-function ShowGraph2() {
-  let { area, time, showHeader } = useParams();
-  return (
-    <ResultPage
-      graph="Boligpriser"
-      area={area}
-      time={time}
-      showHeader={showHeader}
-      reset={App.reset}
-    />
-  )
-}
 export default App;

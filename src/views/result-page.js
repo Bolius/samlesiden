@@ -1,13 +1,8 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Link
-} from "react-router-dom";
 
 import KommuneIndbrud from './KommuneIndbrud'
 import Grundskyld from './KommuneGrundskyld'
 import KommuneBoligpriser from './KommuneBoligpriser'
-import AutoGraph from './auto-graph'
 
 export default class ResultPage extends React.Component {
   constructor(props) {
@@ -24,13 +19,22 @@ export default class ResultPage extends React.Component {
         return <KommuneIndbrud 
                   komKode={this.props.area} 
                   time={this.props.time}
-                  showHeader={this.props.showHeader} />;
-        case "Boligpriser":
+                  showHeader={this.props.showHeader}
+                  graphType={this.props.graphType} />;
+      case "Grundskyld":
+        console.log("Grundskyld er valgt fra resultpage")
+        return <Grundskyld 
+                  komKode={this.props.area} 
+                  time={this.props.time}
+                  showHeader={this.props.showHeader}
+                  graphType={this.props.graphType} />;
+      case "Boligpriser":
         console.log("Boligpriser er valgt fra resultpage")
         return <KommuneBoligpriser 
                   komKode={this.props.area} 
                   time={this.props.time}
-                  showHeader={this.props.showHeader} />;
+                  showHeader={this.props.showHeader}
+                  graphType={this.props.graphType} />;
       default:
         return "";
     }

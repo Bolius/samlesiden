@@ -5,6 +5,7 @@ import CanvasJSReact from '../canvasjs.react';
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function GeneratePostRequest(komKode, tid) {
+  tid = tid.replace("==","")
   var req = {
     table: "STRAF22",
     format: "JSONSTAT",
@@ -59,7 +60,7 @@ class KommuneIndbrud extends React.Component {
 
         var anm = []
         var sig = []
-        var j = v.length / 2
+        var j = v.length / 2 
         for (var i = 0; i <= j - 1; i++){
           anm.push({label: String(names[i]), x:i, y: v[i] })
           sig.push({label: String(names[i]), x:i, y: v[j + i] })
@@ -101,12 +102,14 @@ class KommuneIndbrud extends React.Component {
         name: "Anmeldelser",
         yValueFormatString: "# anmeldelser",
 				dataPoints: this.state.anm,
+				type: this.props.graphType,
     		showInLegend: true
 			  },
         {
         name: "Sigtelser",
         yValueFormatString: "# sigtelser",
 				dataPoints: this.state.sig,
+				type: this.props.graphType,
     		showInLegend: true
 			}]
 		}

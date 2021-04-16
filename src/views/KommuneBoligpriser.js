@@ -52,7 +52,22 @@ class KommuneBoligpriser extends React.Component {
 
     var years = Object.keys(data[city]);
     
-    years = years.filter(y => parseInt(y.replace('K','')) >= parseInt(this.props.time.replace('K','')))
+
+    var reqYear = this.props.time
+    // To make up for user error:
+    if (!reqYear.includes("K")){
+      reqYear = reqYear + "K1"
+    }
+    // Create range of years based on request
+    var year = parseInt(reqYear.substring(2,8).replace('K',''))
+    if (reqYear.includes(">=")){
+      years = years.filter(y => parseInt(y.replace('K','')) >= year)
+    } else if (reqYear.includes("<=")){
+      years = years.filter(y => parseInt(y.replace('K','')) <= year)
+    } else if (reqYear.includes("=")){
+      years = years.filter(y => parseInt(y.replace('K','')) === year)
+    }
+    
     
     var ParcelValues = Object.values(csvParcel.data[city]);
     var FritidsValues = Object.values(csvFritids.data[city]);
@@ -95,20 +110,20 @@ class KommuneBoligpriser extends React.Component {
       },
 			data: [{
         name: this.state.ParcelLegend,
-        type: "spline",
+        type: this.props.graphType,
         yValueFormatString: "# DKK",
         showInLegend: true,
         dataPoints: this.state.Parcel
       },{
         name: this.state.EjerLegend,
         showInLegend: true,
-        type: "spline",
+        type: this.props.graphType,
         yValueFormatString: "# DKK",
         dataPoints: this.state.Ejer
       },{
         name: this.state.FritdsLgend,
         showInLegend: true,
-        type: "spline",
+        type: this.props.graphType,
         yValueFormatString: "# DKK",
         dataPoints: this.state.Fritid
       }]

@@ -4,18 +4,19 @@ import CanvasJSReact from '../canvasjs.react';
 // var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-function GeneratePostRequest(a) {
+function GeneratePostRequest(area,time) {
+  time = time.replace("==","")
   var req = {
     table: "EJDSK3",
     format: "JSONSTAT",
     variables: [
     {
       code: "OMRÅDE",
-      values: [a]
+      values: [area]
     },
     {
       code: "TID",
-      values: ["*"]
+      values: [time]
     },
     {
       code: "EJENTYP",
@@ -30,7 +31,8 @@ class Grundskyld extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: props.komKode,
+      komKode: this.props.komKode,
+      time: this.props.time,
       name: ""
     };
     this.toggleDataSeries = this.toggleDataSeries.bind(this);
@@ -50,7 +52,7 @@ class Grundskyld extends React.Component {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: GeneratePostRequest(this.state.id)
+      body: GeneratePostRequest(this.state.komKode, this.state.time)
     };
 
     fetch('https://api.statbank.dk/v1/data', requestOptions)
