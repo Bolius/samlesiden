@@ -105,35 +105,36 @@ class Grundskyld extends React.Component {
 		    shared: true
 	    },
 			data: [{
+        legendMarkerType: "circle",
         name: this.state.fam1Legend,
-    		type: "spline",
+    		type: this.props.graphType,
         yValueFormatString: "###.###'.000' DKK",
     		showInLegend: true,
 				dataPoints: this.state.fam1
 			},{
         name: this.state.fam2Legend,
         showInLegend: true,
-				type: "spline",
+				type: this.props.graphType,
         yValueFormatString: "###.###'.000' DKK",
 				dataPoints: this.state.fam2
 			},{
         name: this.state.fam3Legend,
         showInLegend: true,
-				type: "spline",
+				type: this.props.graphType,
         label: "Et-familieshuse",
         yValueFormatString: "###.###'.000' DKK",
 				dataPoints: this.state.fam3
 			},{
         name: this.state.ejerLegend,
         showInLegend: true,
-				type: "spline",
+				type: this.props.graphType,
         label: "Et-familieshuse",
         yValueFormatString: "###.###'.000' DKK",
 				dataPoints: this.state.ejer
 			},{
         name: this.state.sommLegend,
         showInLegend: true,
-				type: "spline",
+				type: this.props.graphType,
         label: "Et-familieshuse",
         yValueFormatString: "###.###'.000' DKK",
 				dataPoints: this.state.somm

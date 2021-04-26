@@ -6,28 +6,40 @@ import {
 } from "react-router-dom";
 import ResultPage from "./views/result-page.js";
 import AdressSelect from "./components/adress-select.js";
+import "./index.css";
+import Tabs from "./components/Tabs.js"; 
+
+import KommuneIndbrud from "./views/KommuneIndbrud";
+
 
 import { useParams } from "react-router";
 import trackEvent from "./components/action-logger.js";
 
+import KommuneSelector from "./components/KommuneSelector.js";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.setData = this.setData.bind(this);
+    this.setKomKode = this.setKomKode.bind(this);
     this.state = {
-      showTotalIndbrud: false,
-      showKommuneSelector: false,
-      message: ""
+      komKode: "101",
+      komNavn: "København",
+      hasKomData: "false",
     };
-    
-    this.handleToggleIndbrudTotal = this.handleToggleIndbrudTotal.bind(this);
-    this.handleToggleKommunerSelector = this.handleToggleKommunerSelector.bind(this);
   }
 
-  setData(komKode) {
+
+  setKomKode = (kode) => {
     this.setState({
-      hasData: true,
-      komKode: komKode
+      hasKomData: true,
+      komKode: kode
+    });
+  }
+
+  setAdress = (add) => {
+    this.setState({
+      hasAddress: true,
+      address: add
     });
   }
 
@@ -50,52 +62,101 @@ class App extends React.Component {
     });
   }
 
+  toggleChildMenu = (k) => {
+    this.setState({komKode: k});
+  }
+
+
   reset() {
     this.setState({
       komKode: {},
-      hasData: false
+      hasKomData: false
     });
   }
-
-  handleToggleIndbrudTotal() {
-    this.setState(state => ({
-      showTotalIndbrud: !state.showTotalIndbrud
-    }));
-  }
-
-  handleToggleKommunerSelector() {
-    this.setState(state => ({
-      showKommuneSelector: !state.showKommuneSelector
-    }));
-  }
-
 
   render() {
     return (
       <div>
-        
         <p> {this.state.message} </p>
         <Router>
           <Switch>
             <Route exact path="/">
-              {!this.state.hasData ? (
-                <>
+              <>
+                <h1>Samlesiden</h1>
+                <KommuneSelector action={this.setKomKode} />
                 <AdressSelect
                   toggleDataModal={this.toggleDataModal}
-                  setData={this.setData}
-                />
-                <ul>
-                  <li>/indbrud/:area/:time/:showHeader/:graphType</li>
-                  <li>/boligpriser/:area/:time/:showHeader/:graphType</li>
-                </ul>
-                </>
-              ) : (
-                <ResultPage
-                  toggleDataModal={this.toggleDataModal}
-                  komKode={this.state.komKode}
-                  reset={this.reset}
-                />
-              )}
+                  setAdress={this.setKomKode}
+                  />
+                <p>Valgt kommunekode: {this.state.komKode}</p>
+              </>
+              <Tabs>
+
+                <div label="Kommunebaseret data"> 
+                  <h3>Indbrud og sigtelser i kommunen</h3>
+                  <KommuneIndbrud
+                        komKode={this.state.komKode} 
+                        time={"*"}
+                        showHeader={"false"}
+                        graphType={"spline"} />
+                  
+                </div> 
+                <div label="Adressebaseret data"> 
+                  Vandet kommer, mm.
+                </div> 
+                <div label="Grafkonfigurator"> 
+                  <h3>emne/kommunekode/tid/visOverskrift/graftype</h3>   
+                  <table>
+                    <tr>
+                      <th>Emne</th>
+                      <th>Kommunekode</th>
+                      <th>Tid</th>
+                      <th>Vis overskrift</th>
+                      <th>Graftype</th>
+                    </tr>
+                    <tr>
+                      <td>indbrud</td>
+                      <td>123</td>
+                      <td>Uden kvartal</td>
+                      <td>true | false</td>
+                      <td>graftype</td>
+                    </tr>
+                    <tr>
+                      <td>boligpriser</td>
+                      <td>123</td>
+                      <td>Med kvartal</td>
+                      <td>true | false</td>
+                      <td>graftype</td>
+                    </tr>
+                    <tr>
+                      <td>grundskyld</td>
+                      <td>123</td>
+                      <td>Med kvartal</td>
+                      <td>true | false</td>
+                      <td>graftype</td>
+                    </tr>
+                  </table>
+                  <br />
+                  <table>
+                    <tr>
+                      <th>Attibute</th>
+                      <th>Values</th>
+                    </tr>
+                    <tr>
+                      <td>Tid med kvartal</td>
+                      <td>* | {'>'}=2010K2 | {'<'}=2020K4 | == 2015K2 </td>
+                    </tr>
+                    <tr>
+                      <td>Tid uden kvartal</td>
+                      <td>* | {'>'}=2010 | {'<'}=2020 | == 2015 </td>
+                    </tr>
+                    <tr>
+                      <td>Graftype</td>
+                      <td>line | spline | stepLine | bars | area | splineArea | stepArea | waterfall | column | scatter | bubble</td>
+                    </tr>
+                  </table> 
+                </div> 
+              </Tabs>
             </Route>
             <Switch>
               <Route path="/indbrud/:area/:time/:showHeader/:graphType" children={<ShowGraph1 graph={"AnmSigtKom"}/>} />

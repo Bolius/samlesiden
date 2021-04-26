@@ -1,7 +1,7 @@
 import React from 'react';
 
 import CanvasJSReact from '../canvasjs.react';
-// var CanvasJS = CanvasJSReact.CanvasJS;
+
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function GeneratePostRequest(komKode, tid) {
@@ -34,21 +34,45 @@ function GeneratePostRequest(komKode, tid) {
 }
 
 class KommuneIndbrud extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      komKode: this.props.komKode,
-      time: this.props.time,
-      name: ""
-    };
-    this.toggleDataSeries = this.toggleDataSeries.bind(this);
+  state = {
+    externalData: null,
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    // Store prevId in state so we can compare when props change.
+    // Clear out previously-loaded data (so we don't render stale stuff).
+    if (props.komKode !== state.komKode) {
+      return {
+        externalData: null
+      };
+    }
+    // No state update necessary
+    return null;
   }
+  
+  toggleDataSeries = this.toggleDataSeries.bind(this);
 
   componentDidMount() {
+    this._loadAsyncData(this.props.id);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.externalData === null) {
+      this._loadAsyncData(this.props.komKode);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._asyncRequest) {
+      this._asyncRequest.cancel();
+    }
+  }
+
+  _loadAsyncData() {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: GeneratePostRequest(this.state.komKode, this.state.time)
+      body: GeneratePostRequest(this.props.komKode, this.props.time)
     };
 
     fetch('https://api.statbank.dk/v1/data', requestOptions)
@@ -66,7 +90,7 @@ class KommuneIndbrud extends React.Component {
           sig.push({label: String(names[i]), x:i, y: v[j + i] })
         }
 
-        this.setState({ anm: anm, sig: sig, name: name });
+        this.setState({ anm: anm, sig: sig, name: name, externalData: "", komKode: this.props.komKode});
       });
   }
 
@@ -90,6 +114,9 @@ class KommuneIndbrud extends React.Component {
       title:{
 				text: header
 			},
+      toolTip:{
+        shared: true
+      },
       legend:{
         cursor: "pointer",
         fontSize: 16,

@@ -4,23 +4,27 @@ import CanvasJSReact from '../canvasjs.react';
 // var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-function GeneratePostRequest(table,varset,area,time) {
-  console.log(varset);
-  var varsetParsed = JSON.parse(varset);
-  console.log(JSON.stringify(varsetParsed));
-  console.log("What");
+function GeneratePostRequest(komKode, tid) {
+  tid = tid.replace("==","")
   var req = {
-    table: table,
+    table: "STRAF22",
     format: "JSONSTAT",
     variables: [
       {
         code: "OMRÅDE",
-        values: [area]
+        values: komKode.split(",")
       },
-      varsetParsed,
+      {
+        code: "OVERTRÆD",
+        values: ["1320"]
+      },
+      {
+        code: "ANMSIGT",
+        values: ["*"]
+      },
       {
         code: "TID",
-        values: [time]
+        values: [tid]
       }
     ]
   };
