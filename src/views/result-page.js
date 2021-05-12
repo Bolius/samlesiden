@@ -1,7 +1,4 @@
 import React from "react";
-
-import KommuneIndbrud from './KommuneIndbrud'
-import Grundskyld from './KommuneGrundskyld'
 import KommuneBoligpriser from './KommuneBoligpriser'
 
 export default class ResultPage extends React.Component {
@@ -14,20 +11,7 @@ export default class ResultPage extends React.Component {
 
   renderSwitch(param) {
     switch(param) {
-      case "AnmSigtKom":
-        console.log("Inbrud er valgt fra resultpage")
-        return <KommuneIndbrud 
-                  komKode={this.props.area} 
-                  time={this.props.time}
-                  showHeader={this.props.showHeader}
-                  graphType={this.props.graphType} />;
-      case "Grundskyld":
-        console.log("Grundskyld er valgt fra resultpage")
-        return <Grundskyld 
-                  komKode={this.props.area} 
-                  time={this.props.time}
-                  showHeader={this.props.showHeader}
-                  graphType={this.props.graphType} />;
+      
       case "Boligpriser":
         console.log("Boligpriser er valgt fra resultpage")
         return <KommuneBoligpriser 

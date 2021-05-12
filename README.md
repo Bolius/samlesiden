@@ -33,3 +33,6 @@ $ docker-compose up -d --build
 ```bash
 docker-compose stop
 ```
+
+# Yarn
+Vi bruger `yarn`, da `npm` ikke kunne løse dependencies.

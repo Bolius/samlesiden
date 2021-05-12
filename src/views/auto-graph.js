@@ -1,26 +1,39 @@
 import React from 'react';
-
 import CanvasJSReact from '../canvasjs.react';
-// var CanvasJS = CanvasJSReact.CanvasJS;
+import {Link} from "react-router-dom";
+import Loader from "./../components/Loader";
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-function GeneratePostRequest(komKode, tid) {
+// TODO: Saml de her 3 arrays til 1 array
+var nameVarsMap = [
+  "indbrud", 
+  "grundskyld"
+];
+
+ var tmp = [
+  "ANMSIGT",
+  "EJENTYP"
+]
+
+var graphHeaders = [
+  "Indbrud i private beboelser", 
+  "Grundskyld pr. boligtype"
+]
+
+var vars = [];
+vars[0] = [{code: "OVERTRÆD", values: ["1320"]},
+          {code: "ANMSIGT",  values: ["*"]}]
+vars[1] = [{code: "EJENTYP", values: ["2","3","4","7","8"]}]
+
+function GeneratePostRequest(table, komKode, tid, varIndex) {
   tid = tid.replace("==","")
   var req = {
-    table: "STRAF22",
+    table: table,
     format: "JSONSTAT",
     variables: [
       {
         code: "OMRÅDE",
-        values: komKode.split(",")
-      },
-      {
-        code: "OVERTRÆD",
-        values: ["1320"]
-      },
-      {
-        code: "ANMSIGT",
-        values: ["*"]
+        values: [komKode]
       },
       {
         code: "TID",
@@ -28,46 +41,84 @@ function GeneratePostRequest(komKode, tid) {
       }
     ]
   };
-  console.log(JSON.stringify(req))
+  vars[varIndex].forEach(item => {req.variables.push(item)})
   return JSON.stringify(req)
 
+  
 }
 
-class AutoGraph extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      id: props.komKode,
-      name: ""
-    };
-    this.toggleDataSeries = this.toggleDataSeries.bind(this);
+class AutoGrapher extends React.Component {
+  state = {
+    externalData: null,
+    isLoaded: false
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.komKode !== state.komKode) {
+      return {
+        externalData: null,
+        isLoaded: false
+      };
+    }
+    // No state update necessary
+    return null;
   }
+  
+  toggleDataSeries = this.toggleDataSeries.bind(this);
 
   componentDidMount() {
+    this._loadAsyncData(this.props.id);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.externalData === null) {
+      this._loadAsyncData(this.props.komKode);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._asyncRequest) {
+      this._asyncRequest.cancel();
+    }
+  }
+
+  _loadAsyncData() {
+    var varIndex = nameVarsMap.findIndex(item => {return item === this.props.data});
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: GeneratePostRequest(
-        this.props.table,
-        decodeURI(this.props.varset),
-        this.props.area,
-        this.props.time)
+      body: GeneratePostRequest(this.props.table, this.props.komKode, this.props.time, varIndex)
     };
 
     fetch('https://api.statbank.dk/v1/data', requestOptions)
       .then(response => response.json())
       .then(data => {
         var v = data.dataset.value
+        var axisLabels = Object.values(data.dataset.dimension[tmp[varIndex]].category.label)
         var name = Object.values(data.dataset.dimension.OMRÅDE.category.label)[0]
-        var names = Object.values(data.dataset.dimension.Tid.category.label)
-
-        var anm = []
-        var j = v.length
-        for (var i = 0; i <= j - 1; i++){
-          anm.push({label: String(names[i]), x:i, y: v[i] })
+        var timestamps = Object.values(data.dataset.dimension.Tid.category.label)
+        var dataSets = Object.keys(data.dataset.dimension[tmp[varIndex]].category.label).length
+        var pointSize = data.dataset.dimension.size
+        pointSize = pointSize[pointSize.length - 1]
+        var points = []
+        for (var i = 0; i <= dataSets - 1; i++){
+          points.push([])
+          for (var j = 0; j < pointSize; j++){
+            points[i].push({label: String(timestamps[j]), x:j, y: v[j+(i*pointSize)] })
+          }
         }
 
-        this.setState({ anm: anm, name: name });
+        var dataset = []
+        for (var k = 0; k < dataSets; k++){
+          dataset.push({
+            name: axisLabels[k],
+            yValueFormatString: "# ",
+            dataPoints: points[k],
+            type: this.props.graphType,
+            showInLegend: true
+          })
+        }
+        this.setState({ isLoaded: true, data: dataset, name: name, externalData: "", komKode: this.props.komKode, header: graphHeaders[varIndex]});
       });
   }
 
@@ -82,11 +133,19 @@ class AutoGraph extends React.Component {
 	}
 
   render(){
+    
+    var header = "";
+    if (this.props.showHeader === "true"){
+      header = this.state.header
+    }
     const options = {
 			animationEnabled: true,
       title:{
-				text: "Anmeldelser og sigtelser for indbrud pr. år i " + this.state.name + " kommune"
+				text: header
 			},
+      toolTip:{
+        shared: true
+      },
       legend:{
         cursor: "pointer",
         fontSize: 16,
@@ -95,20 +154,21 @@ class AutoGraph extends React.Component {
       axisY:{
         valueFormatString:"#",
       },
-			data: [{
-        yValueFormatString: "# anmeldelser",
-				dataPoints: this.state.anm,
-    		showInLegend: true
-			}]
+			data: this.state.data
 		}
 		return (
-		<div>
-			<CanvasJSChart options = {options}
-				onRef={ref => this.chart = ref}
-			/>
-		</div>
+		  <div>
+        {!this.state.isLoaded ? <Loader /> :
+			  <CanvasJSChart options = {options}
+				  onRef={ref => this.chart = ref}
+			  />
+        }
+        <Link to={"/"+this.props.table +"/" + this.props.data + "/" + 
+                    this.props.komKode + "/" + this.props.time + "/" + 
+                    this.props.showHeader + "/" + this.props.graphType}>Link til denne graf</Link>
+		  </div>
 		);
   }
 }
 
-export default AutoGraph;
+export default AutoGrapher;

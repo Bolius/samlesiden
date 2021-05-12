@@ -25,6 +25,21 @@ h1 {
   margin: 0 auto;
 }
 
+#address-fetch-field {
+  width: 100%;
+  height: 120px;
+}
+
+#address-fetch-field > div {
+  width: 50%;
+  float:left;
+}
+
+#address-show-field {
+  border-top: 1px solid #ee5c47;
+  width: 100%;
+}
+
 table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
@@ -65,4 +80,58 @@ table th {
   border: solid #ccc;
   color: #FFF;
   border-width: 1px 1px 0 1px;
+}
+
+.autocomplete-container {
+  /* relative position for at de absolut positionerede forslag får korrekt placering.*/
+  position: relative;
+  width: 100%;
+  max-width: 30em;
+}
+
+.autocomplete-container input {
+  /* Både input og forslag får samme bredde som omkringliggende DIV */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dawa-autocomplete-suggestions {
+  margin: 0.3em 0 0 0;
+  padding: 0;
+  text-align: left;
+  border-radius: 0.3125em;
+  background: #fcfcfc;
+  box-shadow: 0 0.0625em 0.15625em rgba(0,0,0,.15);
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion {
+  margin: 0;
+  list-style: none;
+  cursor: pointer;
+  padding: 0.4em 0.6em;
+  color: #333;
+  border: 0.0625em solid #ddd;
+  border-bottom-width: 0;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:first-child {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:last-child {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  border-bottom-width: 0.0625em;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion.dawa-selected,
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:hover {
+  background: #f0f0f0;
 }
