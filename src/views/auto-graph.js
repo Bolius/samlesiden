@@ -6,11 +6,15 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 // TODO: Saml de her 3 arrays til 1 array
 var nameVarsMap = [
-  "indbrud", 
+  "indbrud_total",
+  "indbrud_sigt",
+  "indbrud_anm", 
   "grundskyld"
 ];
 
  var tmp = [
+  "ANMSIGT",
+  "ANMSIGT",
   "ANMSIGT",
   "EJENTYP"
 ]
@@ -22,8 +26,12 @@ var graphHeaders = [
 
 var vars = [];
 vars[0] = [{code: "OVERTRÆD", values: ["1320"]},
-          {code: "ANMSIGT",  values: ["*"]}]
-vars[1] = [{code: "EJENTYP", values: ["2","3","4","7","8"]}]
+           {code: "ANMSIGT",  values: ["*"]}]
+vars[1] = [{code: "OVERTRÆD", values: ["1320"]},
+           {code: "ANMSIGT",  values: ["*"]}]
+vars[2] = [{code: "OVERTRÆD", values: ["1320"]},
+           {code: "ANMSIGT",  values: ["*"]}]
+vars[3] = [{code: "EJENTYP", values: ["2","3","4","7","8"]}]
 
 function GeneratePostRequest(table, komKode, tid, varIndex) {
   tid = tid.replace("==","")

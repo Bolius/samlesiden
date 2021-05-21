@@ -1,12 +1,7 @@
 import React from 'react';
-class Grafkonfigurator extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render(){
-    return (
-      <div>
+export default function Grafkonfigurator() {
+return (
+    <div>
         <h3>emne/kommunekode/tid/visOverskrift/graftype</h3>   
         <table>
             <tr>
@@ -19,7 +14,7 @@ class Grafkonfigurator extends React.Component {
             </tr>
             <tr>
                 <td>STRAF22</td>
-                <td>indbrud</td>
+                <td>indbrud_total | indbrud_sigt | indbrud_anm</td>
                 <td>123</td>
                 <td>Uden kvartal</td>
                 <td>true | false</td>
@@ -61,9 +56,6 @@ class Grafkonfigurator extends React.Component {
                 <td>line | spline | stepLine | bars | area | splineArea | stepArea | waterfall | column | scatter | bubble</td>
             </tr>
         </table> 
-      </div>
-	);
-  }
+    </div>
+    );
 }
-
-export default Grafkonfigurator;

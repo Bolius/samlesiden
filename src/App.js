@@ -35,17 +35,13 @@ class App extends React.Component {
       koms = koms.split(";") 
       bbrs = bbrs.split(";") 
       koder = koder.split(";") 
-
     }
     this.state = {
-      // Verified
       latestAdd: adds,
       latestKom: koms,
       latestBBR: bbrs,
       latestKode: koder,
 
-      
-      // Unverified
       komKode: localStorage.getItem('komKode') || '101',
       komNavn: localStorage.getItem('komNavn') || 'København',
       address: localStorage.getItem('address') || 'Jarmers Plads 2',
@@ -61,7 +57,7 @@ class App extends React.Component {
     return arr.reduce(reducer);
   }
 
-
+  // Updating kommuner and their kodes without address
   setKomKode = (kode,navn) => {
     this.setState({
       hasKomKode: true,
@@ -73,6 +69,8 @@ class App extends React.Component {
     localStorage.setItem('komNavn', navn);
   }
 
+  // Set the current address in state and updates the 
+  // list of last visited addresses
   setAddress = (kode,kom, add, bbr) => {
     console.log("Set address:", kode,kom,add,bbr)
     // Update kommunekoder
@@ -105,6 +103,8 @@ class App extends React.Component {
       komKode: kode
     })
 
+    // All variables are stringified with custom method
+    // to avoid future confusion
     localStorage.setItem('latestKoder', this.stringify(koder))
     localStorage.setItem('latestAdd', this.stringify(addresser));
     localStorage.setItem('latestBBR', this.stringify(bbrs));
@@ -139,9 +139,9 @@ class App extends React.Component {
                   setAddress={this.setAddress} />
               </div>
               <div id="address-show-field">
-                <h2>Viser oplysninger baseret på følgende oplysninger:</h2>
+                <h2>Viser data baseret på følgende oplysninger:</h2>
                 <div>
-                  {this.state.hasKomKode && <p>{this.state.latestKom[0]}, Kommunekode: {this.state.latestKode[0]}</p>}
+                  {this.state.hasKomKode && <p>{this.state.komNavn}, Kommunekode: {this.state.komKode}</p>}
                   {this.state.hasAddress && <p>{this.state.latestAdd[0]}, Kommunekode: {this.state.latestKode[0]}</p>}
                 </div>
               </div>
@@ -153,7 +153,7 @@ class App extends React.Component {
                   <AutoGrapher
                     table={"STRAF22"}
                     komKode={this.state.komKode}
-                    data={"indbrud"}
+                    data={"indbrud_total"}
                     time={"*"}
                     showHeader={"true"}
                     graphType={"spline"}
@@ -168,7 +168,7 @@ class App extends React.Component {
                   />
                   </>
                   :
-                  <p><p>Indtast adresse eller vælg fra kommuner eller seneste addresser.</p></p>
+                  <p>Indtast adresse eller vælg fra kommuner eller seneste addresser.</p>
                 }
               </div> 
               <div label="Vandet kommer">
@@ -189,6 +189,7 @@ class App extends React.Component {
           // If URL is given, generate the requested graph an nothing else
           }
           </Route>
+          <Route path="/shareAdd/:add/:komKode/:komNr/:bbr" children={<updateStateUrl/>} />
           <Route path="/:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
         </Switch>
       </Router>
