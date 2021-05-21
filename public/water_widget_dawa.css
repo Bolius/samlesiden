@@ -1,0 +1,57 @@
+/* DAWA CSS below */
+
+.autocomplete-container {
+    /* relative position for at de absolut positionerede forslag får korrekt placering.*/
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-container input {
+    /* Både input og forslag får samme bredde som omkringliggende DIV */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dawa-autocomplete-suggestions {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    border-radius: 0;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 2.185rem;
+    z-index: 9999;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion {
+    margin: 0;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.4em 0.6em;
+    color: #333;
+    border: 1px solid #f5f5f5;
+    border-bottom-width: 0;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:first-child {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:last-child {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    border-bottom-width: 1px;
+}
+
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion.dawa-selected,
+.dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:hover {
+    background: #d8effa;
+    color: #176da7;
+    text-decoration: underline;
+}

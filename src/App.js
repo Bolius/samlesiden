@@ -19,6 +19,9 @@ import KommuneSelector from "./components/KommuneSelector.js";
 import LatestAddressList from "./components/latest-addresses.js"
 import Grafkonfigurator from './components/Grafkonfigurator';
 
+import WaterComesModule from "./views/water_widget/water-widget-main.js";
+
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +32,10 @@ class App extends React.Component {
       address: localStorage.getItem('address') || '',
       hasAddress: (localStorage.getItem("latestAdd") != null),
       hasKomData: (localStorage.getItem("latestKom") != null),
+      hasBBRData: (localStorage.getItem("latestBBR") != null),
       latestAdd: localStorage.getItem("latestAdd") || [],
+      latestBBR: localStorage.getItem("latestBBR") || [],
+      houseData: {},
     };
   }
 
@@ -50,7 +56,7 @@ class App extends React.Component {
     localStorage.setItem('komNavn', navn);
   }
 
-  setAddress = (kode,kom, add) => {
+  setAddress = (kode,kom, add, bbr) => {
     this.setKomKode(kode,kom)
     this.setState({
       hasAddress: true,
@@ -69,6 +75,15 @@ class App extends React.Component {
     }
     localStorage.setItem('latestAdd', this.stringify(adds));
     
+    var bbrs = []
+    if (localStorage.getItem("latestBBR") === null) {
+      bbrs = [bbr];
+    } else {
+      bbrs = localStorage.getItem("latestBBR").split(';')
+      bbrs.unshift(bbr.toString())
+      bbrs = [...new Set(bbrs)].slice(0,5)
+    }
+    localStorage.setItem('latestBBR', this.stringify(bbrs));
 
     var koms = []
     if (localStorage.getItem("latestKom") === null) {
@@ -82,12 +97,12 @@ class App extends React.Component {
     localStorage.setItem('latestKom', this.stringify(koms));
   }
 
-  updateAddress = (add) => {
+  updateAddress = (add) => {  
     this.setState({
       address: add,
       hasAddress: true
     });
-
+    localStorage.setItem("address",add)
   }
 
   toggleDataModal() {
@@ -110,7 +125,7 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.latestAdd)
+    console.log(this.state)
     return (
       <div>
         <p> {this.state.message} </p>
@@ -121,13 +136,14 @@ class App extends React.Component {
                 <h1>Samlesiden</h1>
                 <div id="address-fetch-field">
                   <div>
-                    <KommuneSelector action={this.setKomKode} komKode={this.state.komKode}/>
-                  </div>
-                  <div>
                     <AdressSelect
                       toggleDataModal={this.toggleDataModal}
                       setAddress={this.setAddress}
+                      setData={this.setData}
                       />
+                  </div>
+                  <div>
+                    <KommuneSelector action={this.setKomKode} komKode={this.state.komKode}/>
                   </div>
                 </div>
                 <div>
@@ -144,7 +160,6 @@ class App extends React.Component {
                 </div>
               </>
               <Tabs>
-
                 <div label="Kommunebaseret data">
                   <AutoGrapher
                     table={"STRAF22"}
@@ -163,8 +178,15 @@ class App extends React.Component {
                     graphType={"spline"}
                   />
                 </div> 
-                <div label="Adressebaseret data"> 
-                  
+                <div label="Vandet kommer">
+                  { this.state.hasAddress ?
+                    <WaterComesModule
+                      navn={this.state.address} 
+                      houseData={this.state.houseData} 
+                    />
+                    :
+                    <p>Indtast adresse eller vælg fra seneste addresser.</p>
+                  } 
                 </div> 
                 <div label="Grafkonfigurator"> 
                   <Grafkonfigurator />

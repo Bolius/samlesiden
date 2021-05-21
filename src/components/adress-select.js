@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Col, Input, Form} from "reactstrap";
-import { BeatLoader as Loader } from "react-spinners";
 import * as dawaModule from "dawa-autocomplete2";
 import Modal from "react-responsive-modal";
 
@@ -14,8 +13,7 @@ export default function AdressSelect(props) {
     setInputAddress("");
     setDawa(dawaModule);
     console.log("Vejnavn: " + select.tekst)
-    props.setAddress(select.data.kommunekode.substring(1,4),select.data.postnrnavn, select.tekst);
-    //document.getElementById("dawa-autocomplete-input").innerHTML = select.tekst;
+    props.setAddress(select.data.kommunekode.substring(1,4),select.data.postnrnavn, select.tekst, select.data.id);
     setIsLoading(false);
   };
 

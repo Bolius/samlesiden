@@ -22,10 +22,9 @@ export default class LatestAddressList extends React.Component {
       if(this.props.addressList.includes(";")){
         input = this.props.addressList.split(';')
       } else {
-        input = this.props.addressList
+        input = [this.props.addressList]
       }
     }
-    console.log("INPUT: " + input)
     if (input.length > 0){
       listItems = input.map((elem) =>
         <li><a onClick={() => this.handleClick(elem)}>{elem}</a></li>
@@ -33,7 +32,7 @@ export default class LatestAddressList extends React.Component {
     }
     return (
       <div>
-        <h4>Seneste adresser:</h4>
+        <h2>Seneste adresser:</h2>
         {(input.length > 0) &&
         <ul>
           {listItems}

@@ -1,0 +1,354 @@
+.ww-action-row {
+  height: 3em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ww-action-checkbox {
+  height: 24px;
+  width: 24px;
+  border: 4px solid #166da8;
+  background-color: white;
+  color: #166da8;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  line-height: 0.7;
+}
+
+.ww-action-text {
+  font-size: 1rem;
+  padding-left: 0.5rem;
+  font-family: "nationalemedium", sans-serif;
+}
+
+.ww-action-container {
+  align-self: flex-end;
+}
+
+.ww-action-container > button {
+  float: right;
+}
+
+/* Address input */
+
+.water-comes-app button {
+  background: #156da7;
+  text-transform: uppercase;
+  color: #fff;
+  font-family: "nationalemedium", sans-serif;
+  font-size: 15px;
+  padding: 0.5rem 1.5rem;
+  height: 2.185rem;
+}
+
+.water-comes-app .twocol {
+  padding: 10px;
+}
+
+.water-comes-app .twocol .col {
+  margin: 0;
+}
+
+.water-comes-app h2 {
+  font-size: 1.25rem;
+}
+
+@media (min-width: 600px) {
+  .water-comes-app h2 {
+    font-size: 1.625rem;
+  }
+}
+
+.water-comes-app h3 {
+  margin-top: 0.25rem;
+}
+
+.ww-address-input > form {
+  background: #69b4e0;
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+}
+
+.ww-address-input button {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+}
+
+.ww-address-input > form > div:last-child {
+  margin-left: auto;
+}
+
+@media (min-width: 600px) {
+  .ww-address-input > form > div:first-child {
+    width: 76%;
+  }
+  .ww-address-input > form > div:last-child {
+    width: 23%;
+  }
+  .ww-address-input button {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+.ww-address-input input {
+  border: none;
+  height: 2.185rem;
+  font-size: 1em;
+  padding: 0 1em;
+  color: #4c4c4c;
+}
+
+.ww-address-input input:focus {
+  outline: none;
+}
+
+/*  appartmentbox */
+.appartmentbox {
+  margin-bottom: 25px;
+  background-color: #59b2dd;
+  color: white;
+  font-weight: 800;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.data-loader {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.recommendation-container > img {
+  width: 100%;
+}
+
+.map-address-reset {
+  background: #69b4e0;
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+}
+
+@media (min-width: 600px) {
+  .map-address-reset {
+    align-items: center;
+  }
+}
+
+.map-address-reset h2 {
+  width: 100%;
+  font-family: "nationalelight", sans-serif;
+  color: white;
+}
+.map-address-reset button {
+  margin-top: 0.5rem;
+  margin-left: auto;
+  padding: 0.5rem;
+}
+
+@media (min-width: 600px) {
+  .map-address-reset h2 {
+    margin: 0;
+    width: 76%;
+  }
+  .map-address-reset button {
+    width: 23%;
+    margin-top: 0;
+  }
+}
+
+.risk-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #eff9fd;
+  padding: 15px 10px 5px;
+  margin-bottom: 1rem;
+  border: 3px solid white;
+}
+
+.risk-summary h2 {
+  margin-bottom: 0;
+  font-family: "nationalemedium", sans-serif;
+  text-transform: uppercase;
+  color: #166ca8;
+}
+
+.risk-summary h3 {
+  font-family: "nationaledemibold", sans-serif;
+  color: #166da8;
+  font-size: 1rem;
+}
+
+@media (min-width: 700px) {
+  .risk-summary h3 {
+    font-size: 1.25rem;
+  }
+}
+
+.risk-summary img {
+  width: 4rem;
+}
+
+.risk-factor {
+  margin-bottom: 1rem;
+}
+
+.risk-factor h2 {
+  font-size: 1.25rem;
+  padding: 0 10px;
+  font-family: "nationalemedium", sans-serif;
+}
+
+.risk-row {
+  padding: 5px 10px;
+  margin: 0.3rem 0;
+  background-color: #eff9fd;
+  cursor: pointer;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.water-comes-app .risk-row h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  width: 92%;
+}
+
+.risk-row p {
+  margin-top: 0;
+}
+
+.water-comes-app .risk-row h3 > span {
+  width: 15px;
+  height: 30px;
+  display: inline-block;
+  float: left;
+}
+
+.risk-row .red {
+  color: #b4383a;
+}
+
+.risk-row .yellow {
+  color: #ffce12;
+}
+
+.risk-row .green {
+  color: #3bac38;
+}
+
+.result-container {
+  background: #d8effa;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Recommendations */
+.recommendation-wrapper {
+  background: #d8effa;
+  padding: 10px;
+  margin-top: 1rem;
+}
+
+.recommendation-wrapper .result-container {
+  background: none;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.water-comes-app .recommendation-wrapper button {
+  margin: 0 auto;
+}
+
+.recommendation-container {
+  background: white;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.recommendation-container > a,
+.recommendation-container > div {
+  width: 100%;
+  display: block;
+}
+
+.recommendation-container p {
+  font-size: 1rem;
+}
+
+.recommendation-container p a {
+  color: #156da7;
+  text-decoration: underline;
+}
+
+@media (min-width: 700px) {
+  .recommendation-container {
+    width: 48.9361%;
+  }
+}
+@media (min-width: 1025px) {
+  .recommendation-container > a,
+  .recommendation-container > div {
+    width: 48.9361%;
+  }
+}
+
+.more-recommendation-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+/* data basis */
+.data-basis {
+  background-color: #f5f6f6;
+  margin: 1rem 0px;
+  padding: 10px;
+}
+
+.data-basis-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.data-basis-header:hover {
+  cursor: pointer;
+}
+
+.data-basis-header h2 {
+  font-size: 1.25rem;
+  font-family: "nationalemedium", sans-serif;
+  margin: 0;
+}
+
+.icon-data-basis,
+.plus-btn {
+  font-size: 2rem;
+  color: #166da8;
+  text-align: right;
+  font-family: "nationalemedium", sans-serif;
+}
+
+.data-basis li {
+  margin: 0.5rem 0;
+}
+
+.data-basis a {
+  color: #156da7;
+  text-decoration: underline;
+}
