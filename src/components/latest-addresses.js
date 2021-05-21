@@ -3,42 +3,51 @@ import React from "react";
 export default class LatestAddressList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      
-    };
-    this.handleClick = this.handleClick.bind(this)
+    this.handleClick = this.handleClick.bind(this);
   }
-
-  handleClick(event){
-    this.props.updateAddress(event)
+    
+  handleClick = (e) => {
+    this.props.setAddress(
+      e.target.dataset.kode,
+      e.target.dataset.kom,
+      e.target.dataset.add,
+      e.target.dataset.bbr,
+    )
   }
-
-
-  render() {
-    var listItems
-    var input = []
-    // Super dumt, men det virker
+  
+  render(){
+    var listItems = [];
     if(this.props.addressList.length > 0){
-      if(this.props.addressList.includes(";")){
-        input = this.props.addressList.split(';')
-      } else {
-        input = [this.props.addressList]
+      var adds = this.props.addressList
+      var koms = this.props.komList
+      var bbrs = this.props.bbrList
+      var koder = this.props.kodeList
+      
+      for (var i = 0; i < adds.length; i++){
+        listItems.push(
+          <li 
+            key={adds[i]} 
+            data-add={adds[i]} 
+            data-kom={koms[i]} 
+            data-bbr={bbrs[i]} 
+            data-kode={koder[i]}
+            onClick={this.handleClick}
+          >
+            {adds[i]}
+          </li>
+        )
       }
     }
-    if (input.length > 0){
-      listItems = input.map((elem) =>
-        <li><a onClick={() => this.handleClick(elem)}>{elem}</a></li>
-      );
-    }
+      
     return (
       <div>
         <h2>Seneste adresser:</h2>
-        {(input.length > 0) &&
+        {(listItems.length > 0) &&
         <ul>
           {listItems}
         </ul>
         }
-        {(input.length <= 0) &&
+        {(listItems.length <= 0) &&
         <p>Ingen gemte adresser. Anvend adressefeltet til for at søge nye adresser.</p>
         }
       </div>

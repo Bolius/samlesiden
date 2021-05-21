@@ -10,9 +10,7 @@
   - Vælg vælg graf type
 
 ## To do:
-- Rotteanmeldelser
-    - Landsdækkende
-    - Pr. kommune
+
 
 - [x] Find kommune via DAWA inputfeldt
  - [ ] Autocomplete kan være meget pænere, men funktionen er der

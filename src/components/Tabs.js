@@ -11,12 +11,13 @@ class Tabs extends Component {
     super(props);
 
     this.state = {
-      activeTab: this.props.children[0].props.label,
+      activeTab: this.props.lastActive,
     };
   }
 
   onClickTabItem = (tab) => {
     this.setState({ activeTab: tab });
+    localStorage.setItem("lastTab", tab);
   }
 
   render() {

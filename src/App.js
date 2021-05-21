@@ -11,8 +11,6 @@ import Tabs from "./components/Tabs.js";
 
 import AutoGrapher from "./views/auto-graph";
 
-import trackEvent from "./components/action-logger.js";
-
 import AdressSelect from "./components/adress-select.js";
 import KommuneSelector from "./components/KommuneSelector.js";
 
@@ -26,19 +24,38 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.setKomKode = this.setKomKode.bind(this);
+    
+    // State preparation
+    var adds = localStorage.getItem("latestAdd") || []
+    var koms = localStorage.getItem("latestKom") || []
+    var bbrs = localStorage.getItem("latestBBR") || []
+    var koder = localStorage.getItem("latestKoder") || []
+    if (adds.length > 0){
+      adds = adds.split(";")
+      koms = koms.split(";") 
+      bbrs = bbrs.split(";") 
+      koder = koder.split(";") 
+
+    }
     this.state = {
+      // Verified
+      latestAdd: adds,
+      latestKom: koms,
+      latestBBR: bbrs,
+      latestKode: koder,
+
+      
+      // Unverified
       komKode: localStorage.getItem('komKode') || '101',
       komNavn: localStorage.getItem('komNavn') || 'København',
-      address: localStorage.getItem('address') || '',
+      address: localStorage.getItem('address') || 'Jarmers Plads 2',
       hasAddress: (localStorage.getItem("latestAdd") != null),
-      hasKomData: (localStorage.getItem("latestKom") != null),
-      hasBBRData: (localStorage.getItem("latestBBR") != null),
-      latestAdd: localStorage.getItem("latestAdd") || [],
-      latestBBR: localStorage.getItem("latestBBR") || [],
-      houseData: {},
+      hasKomKode: (localStorage.getItem("latestKom") != null),
     };
   }
 
+  // Custom toString for address arrays,
+  // as addresses contains ",", .toString() could not be used
   stringify = (arr) => {
     const reducer = (accumulator, currentValue) => accumulator + ";" + String(currentValue);
     return arr.reduce(reducer);
@@ -47,7 +64,7 @@ class App extends React.Component {
 
   setKomKode = (kode,navn) => {
     this.setState({
-      hasKomData: true,
+      hasKomKode: true,
       hasAddress: false,
       komKode: kode,
       komNavn: navn
@@ -57,113 +74,84 @@ class App extends React.Component {
   }
 
   setAddress = (kode,kom, add, bbr) => {
-    this.setKomKode(kode,kom)
+    console.log("Set address:", kode,kom,add,bbr)
+    // Update kommunekoder
+    var koder = this.state.latestKode
+    koder.unshift(String(kode))
+    koder = [...new Set(koder)].slice(0,5)
+
+    // Update kommunenavne
+    var komNavne = this.state.latestKom
+    komNavne.unshift(String(kom))
+    komNavne = [...new Set(komNavne)].slice(0,5)
+    
+    // Update addresser
+    var addresser = this.state.latestAdd
+    addresser.unshift(add)
+    addresser = [...new Set(addresser)].slice(0,5)
+
+    // Update bbr
+    var bbrs = this.state.latestBBR
+    bbrs.unshift(bbr)
+    bbrs = [...new Set(bbrs)].slice(0,5)
+
     this.setState({
       hasAddress: true,
-      address: add,
-      komNavn: kom
-    });
-    localStorage.setItem("address",add)
+      hasKomKode: true,
+      latestKoder: koder,
+      latestKom: komNavne,
+      latestAdd: addresser,
+      latestBBR: bbrs
+    })
 
-    var adds = []
-    if (localStorage.getItem("latestAdd") === null) {
-      adds = [add];
-    } else {
-      adds = localStorage.getItem("latestAdd").split(';')
-      adds.unshift(add.toString())
-      adds = [...new Set(adds)].slice(0,5)
-    }
-    localStorage.setItem('latestAdd', this.stringify(adds));
-    
-    var bbrs = []
-    if (localStorage.getItem("latestBBR") === null) {
-      bbrs = [bbr];
-    } else {
-      bbrs = localStorage.getItem("latestBBR").split(';')
-      bbrs.unshift(bbr.toString())
-      bbrs = [...new Set(bbrs)].slice(0,5)
-    }
+    localStorage.setItem('latestKoder', this.stringify(koder))
+    localStorage.setItem('latestAdd', this.stringify(addresser));
     localStorage.setItem('latestBBR', this.stringify(bbrs));
-
-    var koms = []
-    if (localStorage.getItem("latestKom") === null) {
-      koms = [kode];
-    } else {
-      koms = localStorage.getItem("latestKom").split(';')
-      koms.unshift(kode.toString())
-      koms = [...new Set(koms)].slice(0,5)
-    }
-    this.setState({latesKom: koms,latestAdd: adds});
-    localStorage.setItem('latestKom', this.stringify(koms));
-  }
-
-  updateAddress = (add) => {  
-    this.setState({
-      address: add,
-      hasAddress: true
-    });
-    localStorage.setItem("address",add)
-  }
-
-  toggleDataModal() {
-    if (!this.state.showModal) {
-      if (!this.state.hasData) {
-        trackEvent({
-          description: `Datagrundlag`,
-          eventLabel: `Side: adresseindtastning`,
-        });
-      } else {
-        trackEvent({
-          description: `Datagrundlag`,
-          eventLabel: `Side: resultatside`,
-        });
-      }
-    }
-    this.setState({
-      showModal: !this.state.showModal
-    });
+    localStorage.setItem('latestKom', this.stringify(komNavne));
   }
 
   render() {
-    console.log(this.state)
     return (
-      <div>
-        <p> {this.state.message} </p>
-        <Router>
-          <Switch>
-            <Route exact path="/">
-              <>
-                <h1>Samlesiden</h1>
-                <div id="address-fetch-field">
-                  <div>
-                    <AdressSelect
-                      toggleDataModal={this.toggleDataModal}
-                      setAddress={this.setAddress}
-                      setData={this.setData}
-                      />
-                  </div>
-                  <div>
-                    <KommuneSelector action={this.setKomKode} komKode={this.state.komKode}/>
-                  </div>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <>
+              <h1>Samlesiden</h1>
+              <div id="address-fetch-field">
+                <div>
+                  <AdressSelect
+                    toggleDataModal={this.toggleDataModal}
+                    setAddress={this.setAddress}
+                    setData={this.setData}
+                    />
                 </div>
                 <div>
-                  <LatestAddressList 
-                    addressList={this.state.latestAdd}
-                    updateAddress={this.updateAddress} />
+                  <KommuneSelector action={this.setKomKode} komKode={this.state.komKode}/>
                 </div>
-                <div id="address-show-field">
-                  <h2>Viser oplysninger baseret på følgende oplysninger:</h2>
-                  <div>
-                    {this.state.hasKomData && <p>{this.state.komNavn}, Kommunekode: {this.state.komKode}</p>}
-                    {this.state.hasAddress && <p>{this.state.address}</p>}
-                  </div>
+              </div>
+              <div>
+                <LatestAddressList 
+                  addressList={this.state.latestAdd}
+                  komList={this.state.latestKom}
+                  kodeList={this.state.latestKode}
+                  bbrList={this.state.latestBBR}
+                  setAddress={this.setAddress} />
+              </div>
+              <div id="address-show-field">
+                <h2>Viser oplysninger baseret på følgende oplysninger:</h2>
+                <div>
+                  {this.state.hasKomKode && <p>{this.state.latestKom[0]}, Kommunekode: {this.state.latestKode[0]}</p>}
+                  {this.state.hasAddress && <p>{this.state.latestAdd[0]}, Kommunekode: {this.state.latestKode[0]}</p>}
                 </div>
-              </>
-              <Tabs>
-                <div label="Kommunebaseret data">
+              </div>
+            </>
+            <Tabs  lastActive={localStorage.getItem("lastTab") || "Kommunebaseret data" }>
+              <div label="Kommunebaseret data">
+                { this.state.hasKomKode ?
+                  <>
                   <AutoGrapher
                     table={"STRAF22"}
-                    komKode={this.state.komKode}
+                    komKode={this.state.latestKode[0]}
                     data={"indbrud"}
                     time={"*"}
                     showHeader={"true"}
@@ -171,35 +159,38 @@ class App extends React.Component {
                   />
                   <AutoGrapher
                     table={"EJDSK3"}
-                    komKode={this.state.komKode}
+                    komKode={this.state.latestKode[0]}
                     data={"grundskyld"}
                     time={"*"}
                     showHeader={"true"}
                     graphType={"spline"}
                   />
-                </div> 
-                <div label="Vandet kommer">
-                  { this.state.hasAddress ?
-                    <WaterComesModule
-                      navn={this.state.address} 
-                      houseData={this.state.houseData} 
-                    />
-                    :
-                    <p>Indtast adresse eller vælg fra seneste addresser.</p>
-                  } 
-                </div> 
-                <div label="Grafkonfigurator"> 
-                  <Grafkonfigurator />
-                </div> 
-              </Tabs>
-            {
-            // If URL is given, generate the requested graph an nothing else
-            }
-            </Route>
-            <Route path="/:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
-          </Switch>
-        </Router>
-      </div>
+                  </>
+                  :
+                  <p><p>Indtast adresse eller vælg fra kommuner eller seneste addresser.</p></p>
+                }
+              </div> 
+              <div label="Vandet kommer">
+                { this.state.hasAddress ?
+                  <WaterComesModule
+                    navn={this.state.address} 
+                    houseData={this.state.houseData} 
+                  />
+                  :
+                  <p>Indtast adresse eller vælg fra seneste addresser.</p>
+                } 
+              </div> 
+              <div label="Grafkonfigurator"> 
+                <Grafkonfigurator />
+              </div> 
+            </Tabs>
+          {
+          // If URL is given, generate the requested graph an nothing else
+          }
+          </Route>
+          <Route path="/:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
+        </Switch>
+      </Router>
     );
   }
 }

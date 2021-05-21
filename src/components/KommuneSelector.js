@@ -17,8 +17,6 @@ class KommuneSelector extends React.Component {
     this.props.action(
       event.target.value, 
       kommuner.filter(obj => {return obj.id === event.target.value})[0].label);
-    this.setState({
-      komKode: event.target.value})
     this.handleSubmit(event);
   }
 
@@ -26,9 +24,9 @@ class KommuneSelector extends React.Component {
   render(){
     const selections = kommuner.map((i) => {
         if (this.props.komKode === i.id){
-          return <option label={i.label} value={i.id} selected="selected"></option>
+          return <option key={i.label} label={i.label} value={i.id} defaultValue></option>
         } else {
-          return <option label={i.label} value={i.id} ></option>
+          return <option key={i.label} label={i.label} value={i.id} ></option>
         }
       }
     );
@@ -38,7 +36,6 @@ class KommuneSelector extends React.Component {
           <h2>Vælg kommune</h2>
           <form onSubmit={this.handleSubmit}>
             <label>
-              Vælg din kommune:
               <select value={this.state.value} onChange={this.handleChange}>
                 {selections}
               </select>

@@ -10,7 +10,6 @@ import Loader from "../../components/Loader";
 export default function WaterComesModule(props){
   const [isLoadingHouseData, setLoadingHouseData] = useState(true);
   const [houseData, setHouseData] = useState();
-  const [address, setAddress] = useState(props.navn);
   
   function setData (data) {
     setHouseData(data);
@@ -18,7 +17,6 @@ export default function WaterComesModule(props){
   }
 
   useEffect(() => {
-    setAddress(props.navn)
     setLoadingHouseData(true);
     axios.get("https://api.dataforsyningen.dk/adresser?q=" + props.navn)
       .then(response => {
