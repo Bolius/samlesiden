@@ -2,16 +2,15 @@ import React from 'react';
 class Grafkonfigurator extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
   }
 
   render(){
     return (
-      <>
+      <div>
         <h3>emne/kommunekode/tid/visOverskrift/graftype</h3>   
         <table>
             <tr>
+                <th>Tabel</th>
                 <th>Emne</th>
                 <th>Kommunekode</th>
                 <th>Tid</th>
@@ -19,6 +18,7 @@ class Grafkonfigurator extends React.Component {
                 <th>Graftype</th>
             </tr>
             <tr>
+                <td>STRAF22</td>
                 <td>indbrud</td>
                 <td>123</td>
                 <td>Uden kvartal</td>
@@ -26,6 +26,7 @@ class Grafkonfigurator extends React.Component {
                 <td>graftype</td>
             </tr>
             <tr>
+                <td></td>
                 <td>boligpriser</td>
                 <td>123</td>
                 <td>Med kvartal</td>
@@ -33,6 +34,7 @@ class Grafkonfigurator extends React.Component {
                 <td>graftype</td>
             </tr>
             <tr>
+                <td>EJDSK3</td>
                 <td>grundskyld</td>
                 <td>123</td>
                 <td>Med kvartal</td>
@@ -59,8 +61,8 @@ class Grafkonfigurator extends React.Component {
                 <td>line | spline | stepLine | bars | area | splineArea | stepArea | waterfall | column | scatter | bubble</td>
             </tr>
         </table> 
-      </>
-		);
+      </div>
+	);
   }
 }
 

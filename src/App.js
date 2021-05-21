@@ -101,7 +101,8 @@ class App extends React.Component {
       latestKoder: koder,
       latestKom: komNavne,
       latestAdd: addresser,
-      latestBBR: bbrs
+      latestBBR: bbrs,
+      komKode: kode
     })
 
     localStorage.setItem('latestKoder', this.stringify(koder))
@@ -151,7 +152,7 @@ class App extends React.Component {
                   <>
                   <AutoGrapher
                     table={"STRAF22"}
-                    komKode={this.state.latestKode[0]}
+                    komKode={this.state.komKode}
                     data={"indbrud"}
                     time={"*"}
                     showHeader={"true"}
@@ -159,7 +160,7 @@ class App extends React.Component {
                   />
                   <AutoGrapher
                     table={"EJDSK3"}
-                    komKode={this.state.latestKode[0]}
+                    komKode={this.state.komKode}
                     data={"grundskyld"}
                     time={"*"}
                     showHeader={"true"}

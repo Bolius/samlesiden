@@ -118,7 +118,14 @@ class AutoGrapher extends React.Component {
             showInLegend: true
           })
         }
-        this.setState({ isLoaded: true, data: dataset, name: name, externalData: "", komKode: this.props.komKode, header: graphHeaders[varIndex]});
+        this.setState({ 
+          isLoaded: true, 
+          data: dataset, 
+          name: name, 
+          externalData: "", 
+          komKode: this.props.komKode, 
+          header: graphHeaders[varIndex]}
+        );
       });
   }
 
