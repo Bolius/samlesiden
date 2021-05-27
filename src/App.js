@@ -115,7 +115,7 @@ class App extends React.Component {
     return (
       <Router>
         <Switch>
-          <Route exact path="/">
+          <Route path="/">
             <>
               <h1>Samlesiden</h1>
               <div id="address-fetch-field">
@@ -189,8 +189,8 @@ class App extends React.Component {
           // If URL is given, generate the requested graph an nothing else
           }
           </Route>
-          <Route path="/shareAdd/:add/:komKode/:komNr/:bbr" children={<updateStateUrl/>} />
-          <Route path="/:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
+          <Route path="./shareAdd/:add/:komKode/:komNr/:bbr" children={<updateStateUrl/>} />
+          <Route path="./:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
         </Switch>
       </Router>
     );
