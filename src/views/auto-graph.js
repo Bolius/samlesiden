@@ -49,9 +49,10 @@ function GeneratePostRequest(table, komKode, tid, varIndex) {
       }
     ]
   };
-  vars[varIndex].forEach(item => {req.variables.push(item)})
+  if (vars && vars[varIndex]) {
+    vars[varIndex].forEach(item => {req.variables.push(item)})
+  }
   return JSON.stringify(req)
-
   
 }
 
