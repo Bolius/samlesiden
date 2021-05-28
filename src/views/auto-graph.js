@@ -127,6 +127,7 @@ class AutoGrapher extends React.Component {
             showInLegend: true
           })
         }
+        console.log(dataset)
         this.setState({ 
           isLoaded: true, 
           data: dataset, 

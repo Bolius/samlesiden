@@ -1,50 +1,97 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import axios from "axios";
-import { StepContent } from "@material-ui/core";
+import AutoGrapherRefac from "../views/auto-graph-refac";
 
 export default class DSTMetaFetcher extends React.Component {
     constructor(props) {
         super(props);
+        var q = localStorage.getItem("query") || ""
+        if (q !== ""){ q = JSON.parse(q)}
         this.state = {
             loadingData: true,
-            querySelected: false,
-            query: "",
+            hasQuery: false,
+            query: q,
             tableID: localStorage.getItem("tableID") || "",
             content: null,
-            request: null
+            request: null,
+            fields: []
         };
         
         this.handleTableSubmit = this.handleTableSubmit.bind(this);
         this.handleTableChange = this.handleTableChange.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
+        this.handleSelectionsChange = this.handleSelectionsChange.bind(this);
+        this.handleSelectionsSubmit = this.handleSelectionsSubmit.bind(this);
       }
     
     handleTableSubmit(event){
-        this.setState({loadingData: true});
+        event.preventDefault();
+        this.setState({
+            loadingData: true,
+            query: "",
+            hasQuery: false
+        });
         this.getData()
         localStorage.setItem("tableID",this.state.tableID);
-        event.preventDefault();
     }
 
     handleTableChange(event) {
-        this.setState({tableID: event.target.value});
-      }
+        this.setState({
+            tableID: event.target.value,
+            loadingData: true,
+            hasQuery: false,
+            query: ""
+        });
+    }
+
+    handleQueryChange(event){
+        this.setState({
+            queryTMP: event.target.value,
+            hasQuery: false,
+            hasQueryTMP: true
+        });
+        localStorage.setItem("query",event.target.value);
+    }
+
+    handleQuerySubmit(event){
+        event.preventDefault();
+        console.log("QUERY SUBMIT", this.state)
+        this.setState({
+            hasQuery: true,
+            hasQueryTMP: false,
+            query: JSON.parse(this.state.queryTMP)
+        });
+    }
     
-    handleChange(event) {
-        let nam = event.target.name;
-        let val = event.target.value;
-        this.setState({[nam]: val});
+    handleSelectionsChange(event) {
+        let code = event.target.name;
+        let values = [event.target.value];
+
+        // Pushes new element to front
+        const f = this.state.fields;
+        f.unshift({code,values})
+        // And remove duplicates, meaning 2nd occurence (old value) gets removed
+        const uniqueArray = f.filter((e, index) => {
+            return index === f.findIndex(obj => {
+                console.log(e.values)
+                return obj.code === e.code;
+        })});
+        this.setState({fields: uniqueArray})
         
     }
 
-    handleSubmit(event) {
-        console.log(this.state)
-        var variables = this.state.content.map((elem) => {
-            return elem.key;
-        })
-        console.log(variables)
+    // Submit to create query from selections
+    handleSelectionsSubmit(event) {
         event.preventDefault();
+        var json = {
+            table: this.state.tableID,
+            format: "JSONSTAT",
+            variables: []
+          };
+        this.state.fields.forEach(item => {json.variables.push(item)})
+        this.setState({query: json, queryTMP: JSON.stringify(json), hasQuery: true});
+        localStorage.setItem("query", JSON.stringify(json));
     }
 
     getData(){
@@ -57,10 +104,11 @@ export default class DSTMetaFetcher extends React.Component {
                 
                 var vars = data.variables
 
+                // Generate options from elem values
                 function optionGen(section) {
                     return (
                         section.map((elem) => {                            
-                            return <option key={elem.id} label={elem.label}>{elem.text}</option>
+                            return <option key={elem.id} label={elem.label} value={elem.id}>({elem.id}) {elem.text}</option>
                         })
                     )
                 }
@@ -68,7 +116,7 @@ export default class DSTMetaFetcher extends React.Component {
                 const selections = vars.map((elem) => {
                     return (
                         <label key={elem.id}>{elem.id}
-                            <select name={elem.id} onChange={this.handleChange} >
+                            <select name={elem.id} onChange={this.handleSelectionsChange} >
                                 {optionGen(elem.values)}
                             </select>
                         </label>
@@ -85,11 +133,10 @@ export default class DSTMetaFetcher extends React.Component {
           
         // send the request
         axios(options);
-        console.log("getData(): ", this.state)
     }
 
     componentDidMount() {
-        if(this.state.tableID != ""){
+        if(this.state.tableID !== ""){
             this.getData();
         }
     }
@@ -105,18 +152,25 @@ export default class DSTMetaFetcher extends React.Component {
                     </label>
                     <input type="submit" value="Hent tabel" />
                 </form>
-                <form>
-                {!this.state.loadingData ?
-                    this.state.content
+                <form onSubmit={this.handleSelectionsSubmit}>
+                    {!this.state.loadingData ?
+                        this.state.content
+                        :
+                        ""
+                    }
+                    <input type="submit" value="Opret query" />
+                </form>
+                <form onSubmit={this.handleQuerySubmit}>
+                    <textarea value={this.state.queryTMP} onChange={this.handleQueryChange} />
+                    <input type="submit" value="Hent graf" />
+                </form>
+                {this.state.hasQuery ? 
+                    <AutoGrapherRefac 
+                        query={JSON.stringify(this.state.query)}
+                    />
                     :
                     ""
                 }
-                <input type="submit" value="Submit" />
-                {this.state.querySelected ?
-                    this.state.query :
-                    ""
-                }
-                </form>
             </div>
         )
     }
