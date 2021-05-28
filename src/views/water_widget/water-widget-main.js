@@ -19,6 +19,7 @@ export default function WaterComesModule(props){
   useEffect(() => {
     setLoadingHouseData(true);
     
+    // "Gracefull" cancellation if user switches tabs
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     
@@ -26,19 +27,19 @@ export default function WaterComesModule(props){
       "https://api.dataforsyningen.dk/adresser?q=" + props.navn, {
         cancelToken: source.token
       })
+      .then(response => {
+        getFloodData(response.data[0].id,setData);
+      })
       .catch(function (thrown) {
         if (axios.isCancel(thrown)) {
           console.log('Request canceled', thrown.message);
         }
       })
-      .then(response => {
-        getFloodData(response.data[0].id,setData);
-      })
     
-    
-    return () => {
+    return function cleanup() {
       source.cancel('Operation canceled by the user.');
-    }
+    };
+
   }, [props.navn]);
 
   return (

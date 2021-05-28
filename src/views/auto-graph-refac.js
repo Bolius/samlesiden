@@ -12,7 +12,7 @@ class AutoGrapherRefac extends React.Component {
   };
 
   static getDerivedStateFromProps(props, state) {
-    if (props.query !== state.query) {
+    if (props.query !== state.query || props.graphType !== state.graphType) {
       return {
         externalData: null,
         isLoaded: false
@@ -25,13 +25,11 @@ class AutoGrapherRefac extends React.Component {
   toggleDataSeries = this.toggleDataSeries.bind(this);
 
   componentDidMount() {
-    console.log("Component did mount")
-    this._loadAsyncData(this.props.id);
+    this._loadAsyncData();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.externalData === null) {
-      console.log("Component update")
       this._loadAsyncData(this.props.query);
     }
   }
@@ -52,12 +50,12 @@ class AutoGrapherRefac extends React.Component {
     fetch('https://api.statbank.dk/v1/data', requestOptions)
       .then(response => response.json())
       .then(data => {
+        
         data = data.dataset
 
         var ids = data.dimension.id.filter(e => {return e !== "Tid" & e !== "ContentsCode" && e !== "OMRÅDE"})
         var xLabels = ids.map(e => {return Object.values(data.dimension[e].category.label)})[0]
-        console.log(ids)
-        console.log(xLabels)
+        
         var yValues = data.value
 
         var timestamps = Object.values(data.dimension.Tid.category.label)
@@ -82,7 +80,7 @@ class AutoGrapherRefac extends React.Component {
             name: xLabels[k],
             dataPoints: points[k],
             yValueFormatString: "# ",
-            type: "spline", //this.props.graphType,
+            type: this.props.graphType,
             showInLegend: true
           })
         }
@@ -90,11 +88,10 @@ class AutoGrapherRefac extends React.Component {
           isLoaded: true, 
           data: dataset,  
           externalData: "", 
-          query: this.props.query,         
+          query: this.props.query,    
+          graphType: this.props.graphType,     
           //header: graphHeaders[varIndex]
         });
-        console.log("State set by async")
-        console.log(this.state)
 
       });
   }

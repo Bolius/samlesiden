@@ -10,6 +10,7 @@ export default class LatestAddressList extends React.Component {
   }
     
   handleClick = (e) => {
+    e.preventDefault();
     this.props.setAddress(
       e.target.dataset.kode,
       e.target.dataset.kom,
@@ -28,15 +29,16 @@ export default class LatestAddressList extends React.Component {
       
       for (var i = 0; i < adds.length; i++){
         listItems.push(
-          <li 
-            key={adds[i]} 
-            data-add={adds[i]} 
-            data-kom={koms[i]} 
-            data-bbr={bbrs[i]} 
-            data-kode={koder[i]}
-            onClick={this.handleClick}
-          >
-            {adds[i]}
+          <li key={adds[i]}>
+            <a href=""
+              data-add={adds[i]} 
+              data-kom={koms[i]} 
+              data-bbr={bbrs[i]} 
+              data-kode={koder[i]}
+              onClick={this.handleClick}
+              >
+                {adds[i]}
+            </a>
           </li>
         )
       }

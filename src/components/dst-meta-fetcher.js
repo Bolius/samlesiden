@@ -6,16 +6,18 @@ export default class DSTMetaFetcher extends React.Component {
     constructor(props) {
         super(props);
         var q = localStorage.getItem("query") || ""
-        if (q !== ""){ q = JSON.parse(q)}
         this.state = {
             loadingData: true,
             hasQuery: false,
-            query: q,
+            query: "",
+            queryTMP: q,
             tableID: localStorage.getItem("tableID") || "",
             content: null,
             request: null,
-            fields: []
+            fields: [],
+            graphType: "column",
         };
+        console.log(this.state)
         
         this.handleTableSubmit = this.handleTableSubmit.bind(this);
         this.handleTableChange = this.handleTableChange.bind(this);
@@ -23,6 +25,10 @@ export default class DSTMetaFetcher extends React.Component {
         this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
         this.handleSelectionsChange = this.handleSelectionsChange.bind(this);
         this.handleSelectionsSubmit = this.handleSelectionsSubmit.bind(this);
+
+        this.handleGraphTypeChange = this.handleGraphTypeChange.bind(this);
+
+        this.IsJsonString = this.IsJsonString.bind(this);
       }
     
     handleTableSubmit(event){
@@ -41,7 +47,8 @@ export default class DSTMetaFetcher extends React.Component {
             tableID: event.target.value,
             loadingData: true,
             hasQuery: false,
-            query: ""
+            query: "",
+            queryTMP: ""
         });
     }
 
@@ -56,12 +63,16 @@ export default class DSTMetaFetcher extends React.Component {
 
     handleQuerySubmit(event){
         event.preventDefault();
-        console.log("QUERY SUBMIT", this.state)
-        this.setState({
-            hasQuery: true,
-            hasQueryTMP: false,
-            query: JSON.parse(this.state.queryTMP)
-        });
+        if(this.IsJsonString(this.state.queryTMP)){
+            
+            this.setState({
+                hasQuery: true,
+                hasQueryTMP: false,
+                query: JSON.parse(this.state.queryTMP)
+            });
+        } else {
+            alert("Ugyldigt input")
+        }
     }
     
     handleSelectionsChange(event) {
@@ -74,7 +85,6 @@ export default class DSTMetaFetcher extends React.Component {
         // And remove duplicates, meaning 2nd occurence (old value) gets removed
         const uniqueArray = f.filter((e, index) => {
             return index === f.findIndex(obj => {
-                console.log(e.values)
                 return obj.code === e.code;
         })});
         this.setState({fields: uniqueArray})
@@ -94,6 +104,21 @@ export default class DSTMetaFetcher extends React.Component {
         localStorage.setItem("query", JSON.stringify(json));
     }
 
+    handleGraphTypeChange(event){
+        this.setState({
+            graphType: event.target.value
+        })
+    }
+
+    IsJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     getData(){
         const options = {
             method: 'post',
@@ -103,7 +128,7 @@ export default class DSTMetaFetcher extends React.Component {
                 data = JSON.parse(data)
                 
                 var vars = data.variables
-
+                var firstRows = []
                 // Generate options from elem values
                 function optionGen(section) {
                     return (
@@ -114,6 +139,11 @@ export default class DSTMetaFetcher extends React.Component {
                 }
 
                 const selections = vars.map((elem) => {
+                    var json = {
+                        code: elem.id,
+                        values: [elem.values[0].id]
+                    }
+                    firstRows.push(json)
                     return (
                         <label key={elem.id}>{elem.id}
                             <select name={elem.id} onChange={this.handleSelectionsChange} >
@@ -123,10 +153,11 @@ export default class DSTMetaFetcher extends React.Component {
                     )
                   }
                 );
-                
                 this.setState({
                     loadingData : false,
-                    content: selections
+                    content: selections,
+                    fields: firstRows,
+                    hasQuery: false
                 })
             }]
         };
@@ -144,7 +175,6 @@ export default class DSTMetaFetcher extends React.Component {
     render(){
         return (
             <div>
-                {this.state.tableID ? "Sidste tabel: " + this.state.tableID : ""}
                 <form onSubmit={this.handleTableSubmit}>
                     <label>
                         Tabel 
@@ -161,12 +191,24 @@ export default class DSTMetaFetcher extends React.Component {
                     <input type="submit" value="Opret query" />
                 </form>
                 <form onSubmit={this.handleQuerySubmit}>
-                    <textarea value={this.state.queryTMP} onChange={this.handleQueryChange} />
-                    <input type="submit" value="Hent graf" />
+                    <textarea 
+                        value={this.state.queryTMP} 
+                        onChange={this.handleQueryChange} />
+                    <input type="submit" value="Opdater graf" />
+                </form>
+                <form>
+                    <label>Graftype
+                        <select name="graphType" onChange={this.handleGraphTypeChange} >
+                            <option label="column" value="column"></option>
+                            <option label="spline" value="spline"></option>
+                            <option label="splineArea" value="splineArea"></option>
+                        </select>
+                    </label>
                 </form>
                 {this.state.hasQuery ? 
                     <AutoGrapherRefac 
                         query={JSON.stringify(this.state.query)}
+                        graphType={this.state.graphType}
                     />
                     :
                     ""

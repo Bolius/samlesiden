@@ -39,9 +39,9 @@ class App extends React.Component {
       latestBBR: bbrs,
       latestKode: koder,
 
-      komKode: localStorage.getItem('komKode') || '101',
-      komNavn: localStorage.getItem('komNavn') || 'København',
-      address: localStorage.getItem('address') || 'Jarmers Plads 2',
+      komKode: localStorage.getItem('komKode') || '',
+      komNavn: localStorage.getItem('komNavn') || '',
+      address: localStorage.getItem('address') || '',
       hasAddress: (localStorage.getItem("latestAdd") != null),
       hasKomKode: (localStorage.getItem("latestKom") != null),
     };
