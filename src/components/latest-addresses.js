@@ -1,3 +1,6 @@
+// This module create a clickable list of latests visisted addresses
+// Clicking an address should update the current address
+
 import React from "react";
 
 export default class LatestAddressList extends React.Component {

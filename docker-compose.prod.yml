@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   sample-prod:
-    container_name: sample-prod
+    container_name: Samlesiden-prod
     build:
       context: .
       dockerfile: Dockerfile.prod

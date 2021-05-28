@@ -33,6 +33,7 @@ vars[2] = [{code: "OVERTRÆD", values: ["1320"]},
            {code: "ANMSIGT",  values: ["*"]}]
 vars[3] = [{code: "EJENTYP", values: ["2","3","4","7","8"]}]
 
+
 function GeneratePostRequest(table, komKode, tid, varIndex) {
   tid = tid.replace("==","")
   var req = {
@@ -41,7 +42,7 @@ function GeneratePostRequest(table, komKode, tid, varIndex) {
     variables: [
       {
         code: "OMRÅDE",
-        values: [komKode]
+        values: komKode
       },
       {
         code: "TID",
@@ -127,6 +128,7 @@ class AutoGrapher extends React.Component {
             showInLegend: true
           })
         }
+        console.log(dataset)
         this.setState({ 
           isLoaded: true, 
           data: dataset, 

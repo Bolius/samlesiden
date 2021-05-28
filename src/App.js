@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { useParams } from "react-router";
 
 import "./index.css";
 import Tabs from "./components/Tabs.js"; 
 
+import GraphCreater from "./views/graph-creater";
 import AutoGrapher from "./views/auto-graph";
-
 import AdressSelect from "./components/adress-select.js";
 import KommuneSelector from "./components/KommuneSelector.js";
 
@@ -18,6 +14,7 @@ import LatestAddressList from "./components/latest-addresses.js"
 import Grafkonfigurator from './components/Grafkonfigurator';
 
 import WaterComesModule from "./views/water_widget/water-widget-main.js";
+import DSTMetaFetcher from './components/dst-meta-fetcher';
 
 
 class App extends React.Component {
@@ -100,7 +97,9 @@ class App extends React.Component {
       latestKom: komNavne,
       latestAdd: addresser,
       latestBBR: bbrs,
-      komKode: kode
+      komKode: kode,
+      komNavn: kom,
+      address: add
     })
 
     // All variables are stringified with custom method
@@ -109,6 +108,8 @@ class App extends React.Component {
     localStorage.setItem('latestAdd', this.stringify(addresser));
     localStorage.setItem('latestBBR', this.stringify(bbrs));
     localStorage.setItem('latestKom', this.stringify(komNavne));
+    localStorage.setItem('komNavn', kom);
+    localStorage.setItem('komKode', kode);
   }
 
   render() {
@@ -141,32 +142,17 @@ class App extends React.Component {
               <div id="address-show-field">
                 <h2>Viser data baseret på følgende oplysninger:</h2>
                 <div>
-                  {this.state.hasKomKode && <p>{this.state.komNavn}, Kommunekode: {this.state.komKode}</p>}
-                  {this.state.hasAddress && <p>{this.state.latestAdd[0]}, Kommunekode: {this.state.latestKode[0]}</p>}
+                  {this.state.hasKomKode ? <p>{this.state.komNavn}, Kommunekode: {this.state.komKode}</p> : ""}
+                  {this.state.hasAddress ? <p>{this.state.latestAdd[0]}, </p> : ""}
                 </div>
               </div>
             </>
             <Tabs  lastActive={localStorage.getItem("lastTab") || "Kommunebaseret data" }>
               <div label="Kommunebaseret data">
                 { this.state.hasKomKode ?
-                  <>
-                  <AutoGrapher
-                    table={"STRAF22"}
+                  <GraphCreater 
                     komKode={this.state.komKode}
-                    data={"indbrud_total"}
-                    time={"*"}
-                    showHeader={"true"}
-                    graphType={"spline"}
                   />
-                  <AutoGrapher
-                    table={"EJDSK3"}
-                    komKode={this.state.komKode}
-                    data={"grundskyld"}
-                    time={"*"}
-                    showHeader={"true"}
-                    graphType={"spline"}
-                  />
-                  </>
                   :
                   <p>Indtast adresse eller vælg fra kommuner eller seneste addresser.</p>
                 }
@@ -181,13 +167,13 @@ class App extends React.Component {
                   <p>Indtast adresse eller vælg fra seneste addresser.</p>
                 } 
               </div> 
+              <div label="DST-explorer">
+                <DSTMetaFetcher />
+              </div>
               <div label="Grafkonfigurator"> 
                 <Grafkonfigurator />
               </div> 
             </Tabs>
-          {
-          // If URL is given, generate the requested graph an nothing else
-          }
           </Route>
           <Route path="./shareAdd/:add/:komKode/:komNr/:bbr" children={<updateStateUrl/>} />
           <Route path="./:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
@@ -196,6 +182,7 @@ class App extends React.Component {
     );
   }
 }
+
 
 function ShowGraph(props) {
   let { table, subject, area, time, showHeader, graphType } = useParams();

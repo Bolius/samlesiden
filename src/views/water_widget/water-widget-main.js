@@ -18,10 +18,27 @@ export default function WaterComesModule(props){
 
   useEffect(() => {
     setLoadingHouseData(true);
-    axios.get("https://api.dataforsyningen.dk/adresser?q=" + props.navn)
+    
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    
+    axios.get(
+      "https://api.dataforsyningen.dk/adresser?q=" + props.navn, {
+        cancelToken: source.token
+      })
+      .catch(function (thrown) {
+        if (axios.isCancel(thrown)) {
+          console.log('Request canceled', thrown.message);
+        }
+      })
       .then(response => {
         getFloodData(response.data[0].id,setData);
       })
+    
+    
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    }
   }, [props.navn]);
 
   return (

@@ -135,3 +135,8 @@ table th {
 .dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:hover {
   background: #f0f0f0;
 }
+
+textarea {
+  width: 100%;
+  height: 120px;;
+}
