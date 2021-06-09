@@ -1,11 +1,11 @@
 import React from 'react';
 import CanvasJSReact from '../canvasjs.react';
 import {Link} from "react-router-dom";
-import Loader from "./../components/Loader";
+import Loader from "../components/Loader";
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 
-class AutoGrapherRefac extends React.Component {
+class AutoGrapherAdvanced extends React.Component {
   state = {
     externalData: null,
     isLoaded: false
@@ -53,31 +53,54 @@ class AutoGrapherRefac extends React.Component {
         
         data = data.dataset
 
+        // Get amount of kommuner for this data set
+        var koms = []
+        if(data.dimension.hasOwnProperty("OMRÅDE")){
+          koms = Object.values(data.dimension["OMRÅDE"].category.label)
+        }
+        var komsCount = koms.length
+
+        // Get properties to show
         var ids = data.dimension.id.filter(e => {return e !== "Tid" & e !== "ContentsCode" && e !== "OMRÅDE"})
-        var xLabels = ids.map(e => {return Object.values(data.dimension[e].category.label)})[0]
         
+        // Get labels for each data set
+        var xTmp = ids.map(e => {return Object.values(data.dimension[e].category.label)})
+        var xLabels = [];
+        for(var i = 0; i < komsCount; i++){
+          for(var j = 0; j < xTmp.length; j++){
+            xLabels.push(xTmp[j] + ", " + koms[i])
+          }
+        }
+        
+
+
         var yValues = data.value
 
         var timestamps = Object.values(data.dimension.Tid.category.label)
 
-        // Counts data sets. Could possibly break if multiple kommuner is selected.
-        var dataSets = xLabels.length
+        // Counts data series
+        const objs = Object.keys(data.dimension).filter(e => {
+          return e !== "Tid" && e !== "ContentsCode" && e !== "id" && e !== "size" && e !== "role"})
         
+        // Accumulates data sets
+        var dataSets = 1
+        objs.forEach( e => {dataSets *= Object.values(data.dimension[e].category.label).length}) 
+        console.log(dataSets)
         // Get size of each data set
         var dataSetSize = Object.values(data.dimension.Tid.category.index).length
-
+        
         var points = []
-        for (var i = 0; i <= dataSets - 1; i++){
+        for (i = 0; i < (dataSets) ; i++){
           points.push([])
-          for (var j = 0; j < dataSetSize; j++){
+          for (j = 0; j < dataSetSize; j++){
             points[i].push({label: String(timestamps[j]), x:j, y: yValues[j+(i*dataSetSize)] })
           }
         }
 
         var dataset = []
-        for (var k = 0; k < dataSets; k++){
+        for (var k = 0; k < dataSets * komsCount; k++){
           dataset.push({
-            name: xLabels[k],
+            name: xLabels[k], // TODO
             dataPoints: points[k],
             yValueFormatString: "# ",
             type: this.props.graphType,
@@ -107,7 +130,6 @@ class AutoGrapherRefac extends React.Component {
 	}
 
   render(){
-    
     var header = "";
     if (this.props.showHeader === "true"){
       header = this.state.header
@@ -145,4 +167,4 @@ class AutoGrapherRefac extends React.Component {
   }
 }
 
-export default AutoGrapherRefac;
+export default AutoGrapherAdvanced;

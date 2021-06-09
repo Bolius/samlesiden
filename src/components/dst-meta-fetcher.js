@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import AutoGrapherRefac from "../views/auto-graph-refac";
+import AutoGrapherAdvanced from "../views/auto-graph-adv";
 
 export default class DSTMetaFetcher extends React.Component {
     constructor(props) {
@@ -16,8 +16,10 @@ export default class DSTMetaFetcher extends React.Component {
             request: null,
             fields: [],
             graphType: "column",
+            graphTypesAvailable: 
+                ["line","spline","stepLine","bars","area","splineArea",
+                "stepArea","waterfall","column","scatter","bubble"]
         };
-        console.log(this.state)
         
         this.handleTableSubmit = this.handleTableSubmit.bind(this);
         this.handleTableChange = this.handleTableChange.bind(this);
@@ -26,7 +28,11 @@ export default class DSTMetaFetcher extends React.Component {
         this.handleSelectionsChange = this.handleSelectionsChange.bind(this);
         this.handleSelectionsSubmit = this.handleSelectionsSubmit.bind(this);
 
+        this.createQuery = this.createQuery.bind(this);
         this.handleGraphTypeChange = this.handleGraphTypeChange.bind(this);
+
+        this.onChangeTimeValue = this.onChangeTimeValue.bind(this);
+        this.onTimeValueChange = this.onTimeValueChange.bind(this);
 
         this.IsJsonString = this.IsJsonString.bind(this);
       }
@@ -74,8 +80,25 @@ export default class DSTMetaFetcher extends React.Component {
             alert("Ugyldigt input")
         }
     }
+
+    createQuery(uniqueFields){
+        var json = {
+            table: this.state.tableID,
+            format: "JSONSTAT",
+            variables: []
+          };
+        uniqueFields.forEach(item => {json.variables.push(item)})
+        this.setState({
+            fields: uniqueFields,
+            query: json, 
+            queryTMP: JSON.stringify(json), 
+            hasQuery: true
+        });
+        localStorage.setItem("query", JSON.stringify(json));
+    }
     
     handleSelectionsChange(event) {
+        event.preventDefault()
         let code = event.target.name;
         let values = [event.target.value];
 
@@ -87,27 +110,50 @@ export default class DSTMetaFetcher extends React.Component {
             return index === f.findIndex(obj => {
                 return obj.code === e.code;
         })});
-        this.setState({fields: uniqueArray})
+        this.createQuery(uniqueArray)
         
     }
 
     // Submit to create query from selections
     handleSelectionsSubmit(event) {
         event.preventDefault();
-        var json = {
-            table: this.state.tableID,
-            format: "JSONSTAT",
-            variables: []
-          };
-        this.state.fields.forEach(item => {json.variables.push(item)})
-        this.setState({query: json, queryTMP: JSON.stringify(json), hasQuery: true});
-        localStorage.setItem("query", JSON.stringify(json));
+        this.createQuery(this.state.fields)
     }
 
     handleGraphTypeChange(event){
         this.setState({
             graphType: event.target.value
         })
+    }
+
+    onChangeTimeValue(event) {
+        event.preventDefault()
+        var fields = this.state.fields
+        const isTimeField = (element) => element.code === "Tid";
+        const timeFieldIndex = this.state.fields.findIndex(isTimeField)
+        var timeFieldValue = ""
+        switch(event.target.value){
+            case "from":
+                timeFieldValue = ">=" + this.state.fields[timeFieldIndex].values[0].match(/(\d+)/)[0]
+                break
+            case "to":
+                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/(\d+)/)[0]
+                break
+            case "between":
+                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/(\d+)/)[0]
+                break
+            default:
+                break
+        }
+        fields[timeFieldIndex] = {code: "Tid", values: [timeFieldValue]}
+        this.setState({fields: fields})
+        this.createQuery(this.state.fields)
+    }
+
+    onTimeValueChange(event) {
+        this.setState({
+            selectedOption: event.target.value
+          });
     }
 
     IsJsonString(str) {
@@ -145,11 +191,40 @@ export default class DSTMetaFetcher extends React.Component {
                     }
                     firstRows.push(json)
                     return (
-                        <label key={elem.id}>{elem.id}
-                            <select name={elem.id} onChange={this.handleSelectionsChange} >
-                                {optionGen(elem.values)}
-                            </select>
-                        </label>
+                        <div>
+                            <label key={elem.id}>{elem.id}
+                                <select name={elem.id} onChange={this.handleSelectionsChange} >
+                                    {optionGen(elem.values)}
+                                </select>
+                            </label>
+                            {elem.id === "Tid" ? 
+                            <div onChange={this.onChangeTimeValue}>
+                                <input 
+                                    type="radio" 
+                                    value="from" 
+                                    name="time" 
+                                    checked={this.state.selectedOption === "from"}
+                                    onChange={this.onTimeValueChange}
+                                    /> Fra og med valgt tid
+
+                                <input 
+                                    type="radio" 
+                                    value="to" 
+                                    name="time" 
+                                    checked={this.state.selectedOption === "to"}
+                                    onChange={this.onTimeValueChange}
+                                    /> Op til og med valgt tid
+
+                                <input 
+                                    type="radio" 
+                                    value="between" 
+                                    name="time" 
+                                    checked={this.state.selectedOption === "between"}
+                                    onChange={this.onTimeValueChange}
+                                    /> Mellem
+                            </div> 
+                            : ""} 
+                        </div>
                     )
                   }
                 );
@@ -175,6 +250,12 @@ export default class DSTMetaFetcher extends React.Component {
     render(){
         return (
             <div>
+                <p>Foreslåede tabeller:</p>
+                <ul>
+                    <li>STRAF12</li>
+                    <li>STRAF22</li>
+                    <li>EJDKS3</li>
+                </ul>
                 <form onSubmit={this.handleTableSubmit}>
                     <label>
                         Tabel 
@@ -206,7 +287,7 @@ export default class DSTMetaFetcher extends React.Component {
                     </label>
                 </form>
                 {this.state.hasQuery ? 
-                    <AutoGrapherRefac 
+                    <AutoGrapherAdvanced 
                         query={JSON.stringify(this.state.query)}
                         graphType={this.state.graphType}
                     />
