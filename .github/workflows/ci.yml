@@ -27,16 +27,20 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      run: npm install
+    - name: Install dependencies and make test-coverage
+      run: |
+        npm install
+        make test-coverage
 
-    - name: Run the tests and generate the coverage report
-      run: npm test -- --watchAll=false --coverage
+    - name: Upload test coverage to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Run the tests
+      run: npm test -- --watchAll=false 
       env:
         CI: ""
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
 
     - name: Build
       run: npm run build
