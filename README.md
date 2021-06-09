@@ -5,8 +5,8 @@
 - [ ] ReadMe
 - [ ] Mulighed for at overlaye kommuner
 - [ ] Bedre input til DST-explorer
-    - [x] Bedre valg af tidsperioder
-    - [ ] Mulighed for at klik-vælge flere kommuner
+  - [x] Bedre valg af tidsperioder
+  - [ ] Mulighed for at klik-vælge flere kommuner
 - [ ] Links til predefinerede grafer
 - [ ] Implementering af et Danmarkskort?
 
@@ -14,8 +14,7 @@
 
 ## Environment variables
 
-Since the app [water_comes][water_comes] is imported into this project, an access token for Google Maps has to be given en `.env`. 
-
+Since the app [water_comes][water] is imported into this project, an access token for Google Maps has to be given en `.env`.
 
 ### Technical setup
 
@@ -24,4 +23,4 @@ $ docker pull mikkelbrs/dst-bolius
 $ docker-compose up 
 ```
 
-[water_comes] https://github.com/Bolius/water_comes
+[water]: https://github.com/Bolius/water_comes
