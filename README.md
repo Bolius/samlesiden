@@ -11,6 +11,7 @@
 - [ ] Bedre input til DST-explorer
   - [x] Bedre valg af tidsperioder
   - [ ] Mulighed for at klik-vælge flere kommuner
+  - [ ] Lav en try-catch til "Hent tabel", så tastefejl ikke crasher siden
 - [ ] Links til genererede grader
 - [ ] Links til predefinerede grafer
 - [ ] Implementering af et Danmarkskort?
@@ -24,7 +25,13 @@ Since the app [water_comes][water] is imported into this project, an access toke
 
 ### Technical setup
 
-We have automated building of a Docker container available from GitHub:
+Docker-compose is set up:
+
+```bash
+$ docker-compose up
+```
+
+We have automated builds of Docker containers on main, which available from GitHub:
 
 ```bash
 # Pull latest image from main:
