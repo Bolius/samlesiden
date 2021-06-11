@@ -134,15 +134,17 @@ export default class DSTMetaFetcher extends React.Component {
         var timeFieldValue = ""
         switch(event.target.value){
             case "from":
-                timeFieldValue = ">=" + this.state.fields[timeFieldIndex].values[0].match(/(\d+)/)[0]
+                console.log(this.state.fields[timeFieldIndex].values[0].match(/[0-9]*K+[1-4]/))
+                timeFieldValue = ">=" + this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
                 break
             case "to":
-                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/(\d+)/)[0]
+                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
                 break
             case "between":
-                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/(\d+)/)[0]
+                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
                 break
             default:
+                console.log(event.target.value)
                 break
         }
         fields[timeFieldIndex] = {code: "Tid", values: [timeFieldValue]}
