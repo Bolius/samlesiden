@@ -5,8 +5,10 @@ import { useParams } from "react-router";
 import "./index.css";
 import Tabs from "./components/Tabs.js"; 
 
+import AutoGrapherAdvanced from './components/auto-graph-adv';
+
 import GraphCreater from "./views/graph-creater";
-import AutoGrapher from "./views/auto-graph";
+
 import AdressSelect from "./components/adress-select.js";
 import KommuneSelector from "./components/KommuneSelector.js";
 
@@ -119,6 +121,7 @@ class App extends React.Component {
     return (
       <Router>
         <Switch>
+          <Route path="/:query/:graphType" children={<UrlHandler/>} />
           <Route path="/">
             <>
               <h1>Samlesiden</h1>
@@ -188,8 +191,8 @@ class App extends React.Component {
               </div> 
             </Tabs>
           </Route>
-          <Route path="./shareAdd/:add/:komKode/:komNr/:bbr" children={<updateStateUrl/>} />
-          <Route path="./:graph/:json/:graphType" children={<ShowGraph/>} />
+          
+          
         </Switch>
       </Router>
     );
@@ -197,18 +200,15 @@ class App extends React.Component {
 }
 
 
-function ShowGraph(props) {
-  //let { graph, json, graphType } = useParams();
-  //return (
-  //  <AutoGrapher
-  //    table={table}
-  //    data={subject}
-  //    komKode={area}
-  //    time={time}
-  //    showHeader={showHeader}
-  //    graphType={graphType}
-  //  />
-  //)
+function UrlHandler(props) {
+  let { query , graphType } = useParams();
+  return (
+    <AutoGrapherAdvanced 
+      query={decodeURIComponent(query)}
+      graphType={graphType}
+      includeLink={false}
+    />
+  )
 }
 
 export default App;

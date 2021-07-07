@@ -1,7 +1,7 @@
 import React from 'react';
 import CanvasJSReact from '../canvasjs.react';
 import {Link} from "react-router-dom";
-import Loader from "./../components/Loader";
+import Loader from "./Loader";
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 // TODO: Saml de her 3 arrays til 1 array

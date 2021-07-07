@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
-import AutoGrapherAdvanced from "./auto-graph-adv";
+import Loader from "./../components/Loader.js"
+import AutoGrapherAdvanced from "../components/auto-graph-adv.js";
 
 export default class DSTMetaFetcherSimple extends React.Component {
     constructor(props) {
@@ -30,7 +31,6 @@ export default class DSTMetaFetcherSimple extends React.Component {
         this.createQuery = this.createQuery.bind(this);
         this.handleGraphTypeChange = this.handleGraphTypeChange.bind(this);
 
-        
         this.onTimeValueChange = this.onTimeValueChange.bind(this);
 
         this.IsJsonString = this.IsJsonString.bind(this);
@@ -103,7 +103,8 @@ export default class DSTMetaFetcherSimple extends React.Component {
     // Change the graph type
     handleGraphTypeChange(event){
         this.setState({
-            graphType: event.target.value
+            graphType: event.target.value,
+            selectedOption: "to"
         })
     }
 
@@ -159,7 +160,7 @@ export default class DSTMetaFetcherSimple extends React.Component {
                 var firstRows = []
                 // Generate options from elem values
                 function optionGen(section) {
-                    return (
+                    return ( 
                         section.map((elem) => {                            
                             return <option key={elem.id} label={elem.label} value={elem.id}> {elem.text}</option>
                         })
@@ -173,12 +174,11 @@ export default class DSTMetaFetcherSimple extends React.Component {
                     }
                     firstRows.push(json)
                     return (
-                        <div>
+                        <div id={"field-" + elem.id}>
                             <label key={elem.id}>{elem.id}
-                                <select name={elem.id} onChange={this.handleSelectionsChange} >
+                                <select className="form-control" name={elem.id} onChange={this.handleSelectionsChange} >
                                     {optionGen(elem.values)}
                                 </select>
-                                
                             </label>
                         </div>
                     )
@@ -187,6 +187,7 @@ export default class DSTMetaFetcherSimple extends React.Component {
                 console.log("Reply from statbank")
                 this.setState({
                     loadingData : false,
+                    tableName: data.text,
                     content: selections,
                     fields: firstRows,
                     hasQuery: false
@@ -205,68 +206,69 @@ export default class DSTMetaFetcherSimple extends React.Component {
     }
 
     render(){
+        const graphOptions = this.state.graphTypesAvailable.map((elem) => {                            
+            return <option key={elem} label={elem} value={elem}> {elem}</option>
+        })
         return (
             <div className="dst-fetcher">
-                <p>Find tabeller på <a href="https://www.dst.dk/da/Statistik/emner">Danmarks statistik</a></p>
+                <p>Find tabeller på <a href="https://www.statistikbanken.dk/statbank5a/">Danmarks statistik</a></p>
                 <p>Foreslåede tabeller:</p>
-                <ul>
-                    <li>STRAF12</li>
-                    <li>STRAF22</li>
-                    <li>EJDSK3</li>
-                </ul>
+                <p>STRAF12, STRAF22, EJDSK3</p>
+                <h2>Vælg tabel fra Danmarks statistik</h2>
                 <form onSubmit={this.handleTableSubmit}>
                     <label>
                         Tabel:  
-                        <input type="text" value={this.state.tableID} onChange={this.handleTableChange} />
+                        <input className="form-control" type="text" value={this.state.tableID} onChange={this.handleTableChange} />
                     </label>
-                    <input type="submit" value="Hent tabel" />
+                    <input type="submit" value="Hent information om tabel" />
                 </form>
+                {!this.state.loadingData ?
+                <div>
+                    <h2>Tabel: {this.state.tableName}</h2>
+                    <p>Vælg parametre herunder, eller klik "Opret graf" for at se standardgrafen</p>
+                    
+                    <form onSubmit={this.handleSelectionsSubmit}>
+                        {this.state.content}
+                        <div>
+                            <input 
+                                type="radio" 
+                                value="from"
+                                checked={this.state.selectedOption === "from"}
+                                onChange={this.onTimeValueChange}
+                                /> Fra og med valgt tid
+                            <input 
+                                type="radio" 
+                                value="to" 
+                                checked={this.state.selectedOption === "to"}
+                                onChange={this.onTimeValueChange}
+                                /> Op til og med valgt tid
 
-
-                <form onSubmit={this.handleSelectionsSubmit}>
-                    {!this.state.loadingData ?
-                        this.state.content
-                        :
-                        ""
-                    }
-                    <input type="submit" value="Opret graf" />
-                </form>
-                <form>
-                    <input 
-                        type="radio" 
-                        value="from"
-                        checked={this.state.selectedOption === "from"}
-                        onChange={this.onTimeValueChange}
-                        /> Fra og med valgt tid
-
-                    <input 
-                        type="radio" 
-                        value="to" 
-                        checked={this.state.selectedOption === "to"}
-                        onChange={this.onTimeValueChange}
-                        /> Op til og med valgt tid
-
-                    <input 
-                        type="radio" 
-                        value="between" 
-                        checked={this.state.selectedOption === "between"}
-                        onChange={this.onTimeValueChange}
-                        /> Mellem
+                            <input 
+                                type="radio" 
+                                value="between" 
+                                checked={this.state.selectedOption === "between"}
+                                onChange={this.onTimeValueChange}
+                                /> Mellem
+                        </div>
+                        <input type="submit" value="Opret graf" />
                     </form>
-                <form>
-                    <label>Graftype
-                        <select name="graphType" onChange={this.handleGraphTypeChange} >
-                            <option label="spline" value="spline"></option>
-                            <option label="column" value="column"></option>
-                            <option label="splineArea" value="splineArea"></option>
-                        </select>
-                    </label>
-                </form>
-                {JSON.stringify(this.state.query)}
+                    <h2>Vælg graftype</h2>
+                    <form>
+                        <label>Graftype
+                            <select className="form-control" name="graphType" onChange={this.handleGraphTypeChange} >
+                                {graphOptions}
+                            </select>
+                        </label>
+                    </form>
+                </div>
+                    :
+                    <Loader />
+                }
                 {this.state.hasQuery ? 
                     <AutoGrapherAdvanced 
                         query={JSON.stringify(this.state.query)}
                         graphType={this.state.graphType}
+                        includeLink={true}
                     />
                     :
                     ""

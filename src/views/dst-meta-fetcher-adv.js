@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import AutoGrapherAdvanced from "./auto-graph-adv";
+import AutoGrapherAdvanced from "../components/auto-graph-adv";
 
 export default class DSTMetaFetcherAdv extends React.Component {
     constructor(props) {
@@ -32,7 +32,6 @@ export default class DSTMetaFetcherAdv extends React.Component {
         this.createQuery = this.createQuery.bind(this);
         this.handleGraphTypeChange = this.handleGraphTypeChange.bind(this);
 
-        this.onChangeTimeValue = this.onChangeTimeValue.bind(this);
         this.onTimeValueChange = this.onTimeValueChange.bind(this);
 
         this.IsJsonString = this.IsJsonString.bind(this);
@@ -97,43 +96,52 @@ export default class DSTMetaFetcherAdv extends React.Component {
         localStorage.setItem("query", JSON.stringify(json));
     }
     
-    handleSelectionsChange(event) {
+     // Hanldes a selection change, any auto-generated field
+     handleSelectionsChange(event) {
         event.preventDefault()
         let code = event.target.name;
         let values = [event.target.value];
 
         // Pushes new element to front
         const f = this.state.fields;
+        console.log(f)
         f.unshift({code,values})
         // And remove duplicates, meaning 2nd occurence (old value) gets removed
         const uniqueArray = f.filter((e, index) => {
             return index === f.findIndex(obj => {
                 return obj.code === e.code;
         })});
-        this.createQuery(uniqueArray)
+        this.changeTimeframe(uniqueArray, this.state.selectedOption)
         
     }
 
     // Submit to create query from selections
     handleSelectionsSubmit(event) {
         event.preventDefault();
-        this.createQuery(this.state.fields)
+        this.changeTimeframe(this.state.fields, this.state.selectedOption)   
     }
 
+    // Change the graph type
     handleGraphTypeChange(event){
         this.setState({
-            graphType: event.target.value
+            graphType: event.target.value,
+            selectedOption: "to"
         })
     }
 
-    onChangeTimeValue(event) {
-        event.preventDefault()
-        var fields = this.state.fields
+    onTimeValueChange(event) {
+        this.setState({
+            selectedOption: event.target.value
+          });
+        this.changeTimeframe(this.state.fields, event.target.value)
+    }
+
+    changeTimeframe(fields, token){
         const isTimeField = (element) => element.code === "Tid";
         const timeFieldIndex = this.state.fields.findIndex(isTimeField)
         var timeFieldValue = ""
         const expr = this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
-        switch(event.target.value){
+        switch(token){
             case "from":
                 timeFieldValue = ">=" + expr
                 break
@@ -144,20 +152,12 @@ export default class DSTMetaFetcherAdv extends React.Component {
                 timeFieldValue = "<=" + expr
                 break
             default:
-                console.log(event.target.value)
+                console.log(token)
                 break
         }
         fields[timeFieldIndex] = {code: "Tid", values: [timeFieldValue]}
-        this.setState({fields: fields})
-        this.createQuery(this.state.fields)
         
-    }
-
-    onTimeValueChange(event) {
-        console.log(event.target.value)
-        this.setState({
-            selectedOption: event.target.value
-          });
+        this.createQuery(fields)
     }
 
     IsJsonString(str) {
@@ -225,6 +225,9 @@ export default class DSTMetaFetcherAdv extends React.Component {
     }
 
     render(){
+        const graphOptions = this.state.graphTypesAvailable.map((elem) => {                            
+            return <option key={elem} label={elem} value={elem}> {elem}</option>
+        })
         return (
             <div>
                 <p>Foreslåede tabeller:</p>
@@ -246,7 +249,7 @@ export default class DSTMetaFetcherAdv extends React.Component {
                         :
                         ""
                     }
-                    <div onChange={this.onChangeTimeValue}>
+                    <div>
                         <input 
                             type="radio" 
                             value="from"
@@ -279,9 +282,7 @@ export default class DSTMetaFetcherAdv extends React.Component {
                 <form>
                     <label>Graftype
                         <select name="graphType" onChange={this.handleGraphTypeChange} >
-                            <option label="column" value="column"></option>
-                            <option label="spline" value="spline"></option>
-                            <option label="splineArea" value="splineArea"></option>
+                            {graphOptions}
                         </select>
                     </label>
                 </form>
@@ -289,6 +290,7 @@ export default class DSTMetaFetcherAdv extends React.Component {
                     <AutoGrapherAdvanced 
                         query={JSON.stringify(this.state.query)}
                         graphType={this.state.graphType}
+                        includeLink={true}
                     />
                     :
                     ""

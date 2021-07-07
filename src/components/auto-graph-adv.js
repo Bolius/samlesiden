@@ -1,7 +1,7 @@
 import React from 'react';
 import CanvasJSReact from '../canvasjs.react';
 import {Link} from "react-router-dom";
-import Loader from "../components/Loader";
+import Loader from "./Loader";
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 
@@ -174,9 +174,11 @@ class AutoGrapherAdvanced extends React.Component {
 			      onRef={ref => this.chart = ref}
 			    />
         }
-        <Link to={"/"+this.props.table +"/" + this.props.data + "/" + 
-                this.props.komKode + "/" + this.props.time + "/" + 
-                this.props.showHeader + "/" + this.props.graphType}>Link til denne graf</Link>
+        {this.props.includeLink ? 
+          <Link to={encodeURIComponent(this.props.query)+"/"+this.props.graphType}>Link til denne graf</Link>
+          :
+          ""
+        }
 		</div>
 	);
   }

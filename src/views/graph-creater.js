@@ -1,6 +1,6 @@
 // This module should be responsible for creating all graphs currently available
 
-import AutoGrapher from "./auto-graph";
+import AutoGrapher from "./../components/auto-graph.js";
 
 export default function GraphCreater(props) {
     const komKode = props.komKode;
