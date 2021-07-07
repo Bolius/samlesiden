@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
-import AutoGrapherAdvanced from "../views/auto-graph-adv";
+import AutoGrapherAdvanced from "./auto-graph-adv";
 
-export default class DSTMetaFetcher extends React.Component {
+export default class DSTMetaFetcherAdv extends React.Component {
     constructor(props) {
         super(props);
         var q = localStorage.getItem("query") || ""
@@ -15,6 +15,7 @@ export default class DSTMetaFetcher extends React.Component {
             content: null,
             request: null,
             fields: [],
+            selectedOption: "from",
             graphType: "column",
             graphTypesAvailable: 
                 ["line","spline","stepLine","bars","area","splineArea",
@@ -70,7 +71,6 @@ export default class DSTMetaFetcher extends React.Component {
     handleQuerySubmit(event){
         event.preventDefault();
         if(this.IsJsonString(this.state.queryTMP)){
-            
             this.setState({
                 hasQuery: true,
                 hasQueryTMP: false,
@@ -132,16 +132,16 @@ export default class DSTMetaFetcher extends React.Component {
         const isTimeField = (element) => element.code === "Tid";
         const timeFieldIndex = this.state.fields.findIndex(isTimeField)
         var timeFieldValue = ""
+        const expr = this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
         switch(event.target.value){
             case "from":
-                console.log(this.state.fields[timeFieldIndex].values[0].match(/[0-9]*K+[1-4]/))
-                timeFieldValue = ">=" + this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
+                timeFieldValue = ">=" + expr
                 break
             case "to":
-                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
+                timeFieldValue = "<=" + expr
                 break
             case "between":
-                timeFieldValue = "<=" + this.state.fields[timeFieldIndex].values[0].match(/[0-9]{4}(K[1-4])*/)[0]
+                timeFieldValue = "<=" + expr
                 break
             default:
                 console.log(event.target.value)
@@ -150,9 +150,11 @@ export default class DSTMetaFetcher extends React.Component {
         fields[timeFieldIndex] = {code: "Tid", values: [timeFieldValue]}
         this.setState({fields: fields})
         this.createQuery(this.state.fields)
+        
     }
 
     onTimeValueChange(event) {
+        console.log(event.target.value)
         this.setState({
             selectedOption: event.target.value
           });
@@ -167,7 +169,7 @@ export default class DSTMetaFetcher extends React.Component {
         return true;
     }
 
-    getData(){
+    getData(){    
         const options = {
             method: 'post',
             url: 'https://api.statbank.dk/v1/tableinfo',
@@ -199,33 +201,6 @@ export default class DSTMetaFetcher extends React.Component {
                                     {optionGen(elem.values)}
                                 </select>
                             </label>
-                            {elem.id === "Tid" ? 
-                            <div onChange={this.onChangeTimeValue}>
-                                <input 
-                                    type="radio" 
-                                    value="from" 
-                                    name="time" 
-                                    checked={this.state.selectedOption === "from"}
-                                    onChange={this.onTimeValueChange}
-                                    /> Fra og med valgt tid
-
-                                <input 
-                                    type="radio" 
-                                    value="to" 
-                                    name="time" 
-                                    checked={this.state.selectedOption === "to"}
-                                    onChange={this.onTimeValueChange}
-                                    /> Op til og med valgt tid
-
-                                <input 
-                                    type="radio" 
-                                    value="between" 
-                                    name="time" 
-                                    checked={this.state.selectedOption === "between"}
-                                    onChange={this.onTimeValueChange}
-                                    /> Mellem
-                            </div> 
-                            : ""} 
                         </div>
                     )
                   }
@@ -271,6 +246,28 @@ export default class DSTMetaFetcher extends React.Component {
                         :
                         ""
                     }
+                    <div onChange={this.onChangeTimeValue}>
+                        <input 
+                            type="radio" 
+                            value="from"
+                            checked={this.state.selectedOption === "from"}
+                            onChange={this.onTimeValueChange}
+                            /> Fra og med valgt tid
+
+                        <input 
+                            type="radio" 
+                            value="to" 
+                            checked={this.state.selectedOption === "to"}
+                            onChange={this.onTimeValueChange}
+                            /> Op til og med valgt tid
+
+                        <input 
+                            type="radio" 
+                            value="between" 
+                            checked={this.state.selectedOption === "between"}
+                            onChange={this.onTimeValueChange}
+                            /> Mellem
+                            </div>
                     <input type="submit" value="Opret query" />
                 </form>
                 <form onSubmit={this.handleQuerySubmit}>

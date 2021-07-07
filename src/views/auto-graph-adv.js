@@ -30,7 +30,7 @@ class AutoGrapherAdvanced extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.externalData === null) {
-      this._loadAsyncData(this.props.query);
+      this._loadAsyncData();
     }
   }
 
@@ -39,6 +39,7 @@ class AutoGrapherAdvanced extends React.Component {
       this._asyncRequest.cancel();
     }
   }
+  
 
   _loadAsyncData() {
     const requestOptions = {
@@ -54,7 +55,7 @@ class AutoGrapherAdvanced extends React.Component {
         data = data.dataset
 
         // Get amount of kommuner for this data set
-        var koms = []
+        var koms = ["samlet, Danmark"]
         if(data.dimension.hasOwnProperty("OMRÅDE")){
           koms = Object.values(data.dimension["OMRÅDE"].category.label)
         }
@@ -65,10 +66,23 @@ class AutoGrapherAdvanced extends React.Component {
         
         // Get labels for each data set
         var xTmp = ids.map(e => {return Object.values(data.dimension[e].category.label)})
+        
         var xLabels = [];
+        function labelGen(out,a,b){
+          if(a.constructor === Array){
+            for(var i = 0; i < a.length; i++){
+              labelGen(out,a[i],b)
+            }
+          } else {
+            out.push(a + ", " + b)
+          }
+        }
         for(var i = 0; i < komsCount; i++){
-          for(var j = 0; j < xTmp.length; j++){
-            xLabels.push(xTmp[j] + ", " + koms[i])
+          if(xTmp.length === 1){
+            xLabels.push(xTmp[i] + ", " + koms[i])
+          }
+          for(var j = 1; j < xTmp.length; j++){
+            labelGen(xLabels, xTmp[j], koms[i])
           }
         }
         
@@ -83,9 +97,9 @@ class AutoGrapherAdvanced extends React.Component {
           return e !== "Tid" && e !== "ContentsCode" && e !== "id" && e !== "size" && e !== "role"})
         
         // Accumulates data sets
-        var dataSets = 1
-        objs.forEach( e => {dataSets *= Object.values(data.dimension[e].category.label).length}) 
-        console.log(dataSets)
+        var dataSets = 0
+        objs.forEach( e => {dataSets += Object.values(data.dimension[e].category.label).length}) 
+        
         // Get size of each data set
         var dataSetSize = Object.values(data.dimension.Tid.category.index).length
         
@@ -98,7 +112,8 @@ class AutoGrapherAdvanced extends React.Component {
         }
 
         var dataset = []
-        for (var k = 0; k < dataSets * komsCount; k++){
+        
+        for (var k = 0; k < xLabels.length; k++){
           dataset.push({
             name: xLabels[k], // TODO
             dataPoints: points[k],
@@ -113,7 +128,7 @@ class AutoGrapherAdvanced extends React.Component {
           externalData: "", 
           query: this.props.query,    
           graphType: this.props.graphType,     
-          //header: graphHeaders[varIndex]
+          header: ["hej","meddig"]
         });
 
       });

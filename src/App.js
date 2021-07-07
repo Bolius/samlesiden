@@ -14,7 +14,10 @@ import LatestAddressList from "./components/latest-addresses.js"
 import Grafkonfigurator from './components/Grafkonfigurator';
 
 import WaterComesModule from "./views/water_widget/water-widget-main.js";
-import DSTMetaFetcher from './components/dst-meta-fetcher';
+import DSTMetaFetcherAdv from './views/dst-meta-fetcher-adv';
+import DSTMetaFetcherSimple from './views/dst-meta-fetcher-simple';
+
+import BBRModule from "./views/BBRModule.js";
 
 
 class App extends React.Component {
@@ -148,6 +151,13 @@ class App extends React.Component {
               </div>
             </>
             <Tabs  lastActive={localStorage.getItem("lastTab") || "Kommunebaseret data" }>
+              <div label="BBR (WIP)">
+                {console.log(this.state.latestBBR)}
+                <BBRModule 
+                  bbr_id={this.state.latestBBR[0]}
+                  address={this.state.latestAdd[0]}
+                  />
+              </div>
               <div label="Kommunebaseret data">
                 { this.state.hasKomKode ?
                   <GraphCreater 
@@ -168,7 +178,10 @@ class App extends React.Component {
                 } 
               </div> 
               <div label="DST-explorer">
-                <DSTMetaFetcher />
+                <DSTMetaFetcherSimple />
+              </div>
+              <div label="DST-explorer (Adv)">
+                <DSTMetaFetcherAdv />
               </div>
               <div label="Grafkonfigurator"> 
                 <Grafkonfigurator />
@@ -176,7 +189,7 @@ class App extends React.Component {
             </Tabs>
           </Route>
           <Route path="./shareAdd/:add/:komKode/:komNr/:bbr" children={<updateStateUrl/>} />
-          <Route path="./:table/:subject/:area/:time/:showHeader/:graphType" children={<ShowGraph/>} />
+          <Route path="./:graph/:json/:graphType" children={<ShowGraph/>} />
         </Switch>
       </Router>
     );
@@ -185,17 +198,17 @@ class App extends React.Component {
 
 
 function ShowGraph(props) {
-  let { table, subject, area, time, showHeader, graphType } = useParams();
-  return (
-    <AutoGrapher
-      table={table}
-      data={subject}
-      komKode={area}
-      time={time}
-      showHeader={showHeader}
-      graphType={graphType}
-    />
-  )
+  //let { graph, json, graphType } = useParams();
+  //return (
+  //  <AutoGrapher
+  //    table={table}
+  //    data={subject}
+  //    komKode={area}
+  //    time={time}
+  //    showHeader={showHeader}
+  //    graphType={graphType}
+  //  />
+  //)
 }
 
 export default App;
