@@ -16,6 +16,7 @@
 - [ ] Links til predefinerede grafer
 - [ ] Implementering af et Danmarkskort?
 - [ ] Mulighed for eksportering af data? CSV?
+- [ ] Login? Adskillelse af værktøjer og fremvisning af data
 
 ## Code structure
 
@@ -40,6 +41,13 @@ $ docker pull ghcr.io/mikster4/samlesiden:main
 # Or pull and run latest image from main 
 $ docker run -p 3000:3000 ghcr.io/mikster4/samlesiden:main
 
+```
+
+## Queries til afprøvning
+
+```text
+  Flere forbrydelser overlay
+  {"table":"STRAF22","format":"JSONSTAT","variables":[{"code":"OVERTRÆD","values":["1316","1320"]},{"code":"OMRÅDE","values":["000"]},{"code":"ANMSIGT","values":["ANM"]},{"code":"Tid","values":[">=2007"]}]}
 ```
 
 ## Fredagsopgaven
@@ -140,4 +148,4 @@ jobs:
 
 ```
 
-[water]: https://github.com/Bolius/water_comes
+[water]: https://github.com/Bolius/water_comes'
