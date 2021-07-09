@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:13.12.0-alpine
+FROM node:14.17.0-alpine
 
 # set working directory
 WORKDIR /app
@@ -9,10 +9,9 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # install app dependencies
 COPY package.json ./
-COPY package-lock.json ./
+COPY yarn.lock ./
 RUN yarn install
-RUN yarn install react-scripts@3.4.1 -g
-
+RUN yarn global add react-scripts@3.4.1
 # add app
 COPY . ./
 
