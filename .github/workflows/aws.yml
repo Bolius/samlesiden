@@ -79,6 +79,6 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: gha-service
-        cluster: gha-cluster
+        service: service-3
+        cluster: cluster-3
         wait-for-service-stability: true
