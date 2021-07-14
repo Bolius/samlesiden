@@ -12,7 +12,12 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn install
 RUN yarn global add react-scripts@3.4.1
+
+EXPOSE 8080
+
 # add app
+
+
 COPY . ./
 
 # start app
