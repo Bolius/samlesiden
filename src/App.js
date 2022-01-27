@@ -125,6 +125,14 @@ class App extends React.Component {
           <Route path="/">
             <>
               <h1>Samlesiden</h1>
+              <div>
+                <LatestAddressList 
+                  addressList={this.state.latestAdd}
+                  komList={this.state.latestKom}
+                  kodeList={this.state.latestKode}
+                  bbrList={this.state.latestBBR}
+                  setAddress={this.setAddress} />
+              </div>
               <div id="address-fetch-field">
                 <div>
                   <AdressSelect
@@ -136,21 +144,12 @@ class App extends React.Component {
                 <div>
                   <KommuneSelector action={this.setKomKode} komKode={this.state.komKode}/>
                 </div>
-              </div>
-              <div>
-                <LatestAddressList 
-                  addressList={this.state.latestAdd}
-                  komList={this.state.latestKom}
-                  kodeList={this.state.latestKode}
-                  bbrList={this.state.latestBBR}
-                  setAddress={this.setAddress} />
-              </div>
+              </div>              
               <div id="address-show-field">
-                <h2>Viser data baseret på følgende oplysninger:</h2>
-                <div>
-                  {this.state.hasKomKode ? <p>{this.state.komNavn}, Kommunekode: {this.state.komKode}</p> : ""}
-                  {this.state.hasAddress ? <p>{this.state.latestAdd[0]}, </p> : ""}
-                </div>
+                <h2>Viser data baseret på følgende oplysninger:<br />                
+                  {this.state.hasKomKode ? <span className="data-based-on">{this.state.komNavn}, Kommunekode: {this.state.komKode}</span> : ""}
+                  {this.state.hasAddress ? <span className="data-based-on">{this.state.latestAdd[0]}, </span> : ""}
+                </h2>
               </div>
             </>
             <Tabs  lastActive={localStorage.getItem("lastTab") || "Kommunebaseret data" }>

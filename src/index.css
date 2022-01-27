@@ -20,6 +20,11 @@ h1 {
   font-size: 4em;
 }
 
+.latest-address {  
+  color: #ee5c47;
+  text-decoration: none;
+}
+
 #page {
   width: 1040px;
   margin: 0 auto;
@@ -36,10 +41,20 @@ h1 {
 }
 
 #address-show-field {
-  border-top: 1px solid #ee5c47;
+  /*border-top: 1px solid #ee5c47;*/
   width: 100%;
+  margin-bottom: 30px;
 }
-
+#address-show-field h2 {
+  font-size: 1.0em;
+}
+#address-show-field h2 .data-based-on {
+  display: inline-flex;
+  padding: 10px 10px;
+  line-height: 22px;
+  background-color: #dddddd;
+  margin: 5px 10px 0px 0px;
+}
 table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
@@ -169,3 +184,4 @@ textarea {
   border-radius: 0px;
   transition: all 0.2s ease-out;
 }
+

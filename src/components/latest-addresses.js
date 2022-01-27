@@ -29,8 +29,8 @@ export default class LatestAddressList extends React.Component {
       
       for (var i = 0; i < adds.length; i++){
         listItems.push(
-          <li key={adds[i]}>
-            <a href=""
+          <React.Fragment>
+            <a key={adds[i]} className="latest-address" href=""
               data-add={adds[i]} 
               data-kom={koms[i]} 
               data-bbr={bbrs[i]} 
@@ -38,24 +38,22 @@ export default class LatestAddressList extends React.Component {
               onClick={this.handleClick}
               >
                 {adds[i]}
-            </a>
-          </li>
+            </a>{i < adds.length - 1 ? <span>, </span> : ''}
+            </React.Fragment>
         )
       }
     }
       
     return (
-      <div>
-        <h2>Seneste adresser:</h2>
-        {(listItems.length > 0) &&
-        <ul>
-          {listItems}
-        </ul>
-        }
+      <React.Fragment>
+        <p>
+        Seneste adresser:&nbsp;
+       {listItems.length > 0 ? listItems : ''}
         {(listItems.length <= 0) &&
-        <p>Ingen gemte adresser. Anvend adressefeltet til for at søge nye adresser.</p>
+          <React.Fragment>Ingen gemte adresser. Anvend adressefeltet til for at søge nye adresser.</React.Fragment>
         }
-      </div>
+        </p>
+      </React.Fragment>
     );
   }
 }

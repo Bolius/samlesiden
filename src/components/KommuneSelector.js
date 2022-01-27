@@ -36,7 +36,7 @@ class KommuneSelector extends React.Component {
           <h2>Vælg kommune</h2>
           <form onSubmit={this.handleSubmit}>
             <label>
-              <select value={this.state.value} onChange={this.handleChange}>
+              <select class="form-control" value={this.state.value} onChange={this.handleChange}>
                 {selections}
               </select>
             </label>
